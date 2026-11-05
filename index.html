@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>JEJAK · Modul 3 Informatika & KKA Kelas IX</title>
+<style>
+:root{--ink:#1B2B34;--muted:#5A6B70;--teal:#0F3D3E;--teal2:#0F7C7A;--teal3:#2A9D8F;--mint:#EAF3F2;--mint2:#D7E8E6;--amber:#F2A541;--coral:#E76F51;--green:#6E9D5F;--line:#D5E2E1;--bg:#F7FAFA;--r:14px}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+a{color:var(--teal2)}
+.big{font-size:19px}
+header.top{background:var(--teal);color:#fff;position:sticky;top:0;z-index:20}
+.top .in{max-width:1080px;margin:0 auto;padding:10px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;color:#fff;text-decoration:none;font-weight:800;letter-spacing:.5px}
+.brand .logo{width:34px;height:34px;border-radius:10px;background:var(--amber);display:grid;place-items:center;color:var(--teal);font-size:18px}
+.brand small{display:block;font-weight:500;letter-spacing:0;opacity:.8;font-size:12px}
+.top .sp{flex:1}
+.chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:5px 12px;font-size:14px;cursor:pointer}
+.chip.warn{background:var(--amber);color:var(--teal);border-color:var(--amber);font-weight:700}
+main{max-width:1080px;margin:0 auto;padding:22px 18px 80px}
+h1{font-size:28px;line-height:1.2;margin:4px 0 8px}
+h2{font-size:21px;margin:26px 0 10px}
+h3{font-size:17px;margin:16px 0 6px}
+.muted{color:var(--muted)}
+.crumb{font-size:14px;color:var(--muted);margin-bottom:6px}
+.crumb a{text-decoration:none}
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.grid{display:grid;gap:14px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.hero{background:var(--teal);color:#fff;border-radius:18px;padding:26px;position:relative;overflow:hidden}
+.hero .pq{font-size:20px;font-style:italic;max-width:760px;margin-top:10px}
+.hero .tag{color:var(--amber);font-weight:700;font-size:13px;letter-spacing:1.5px;text-transform:uppercase}
+.pcard{display:block;text-decoration:none;color:inherit;transition:transform .12s,box-shadow .12s}
+.pcard:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(15,61,62,.12)}
+.pnum{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--teal2);color:#fff;font-weight:800;font-size:17px}
+.badge{display:inline-block;font-size:12px;font-weight:700;border-radius:999px;padding:2px 10px;background:var(--mint);color:var(--teal)}
+.badge.soon{background:#F1F1F1;color:#777}
+.badge.done{background:#E3F1DD;color:#3D6B2F}
+.badge.grp{background:#FCEBD3;color:#8A5A10}
+.bar{height:8px;background:var(--mint);border-radius:9px;overflow:hidden;margin-top:10px}
+.bar>i{display:block;height:100%;background:var(--teal3)}
+.klist{list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.kitem{display:flex;gap:14px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 14px;text-decoration:none;color:inherit}
+a.kitem:hover{border-color:var(--teal3)}
+.kitem.soon{opacity:.75}
+.kitem .n{width:34px;height:34px;flex:none;border-radius:50%;background:var(--mint);display:grid;place-items:center;font-weight:800;color:var(--teal)}
+.kitem.isdone .n{background:var(--green);color:#fff}
+.kitem .t{flex:1}
+.kitem .t b{display:block}
+.kitem .m{font-size:13px;color:var(--muted)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:0;border-radius:11px;padding:11px 18px;font-weight:700;cursor:pointer;background:var(--teal2);color:#fff;text-decoration:none}
+.btn:hover{filter:brightness(1.08)}
+.btn:disabled{background:#B8C6C5;cursor:not-allowed}
+.btn.ghost{background:#fff;color:var(--teal2);border:2px solid var(--teal2)}
+.btn.amber{background:var(--amber);color:var(--teal)}
+.btn.sm{padding:6px 12px;font-size:14px;border-radius:9px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.note{background:var(--mint);border-radius:12px;padding:12px 14px;margin:12px 0}
+.note.amber{background:#FDF0DA}
+.note.coral{background:#FBE3DC}
+.note b:first-child{color:var(--teal)}
+label.f{display:block;font-weight:700;margin:14px 0 6px}
+input[type=text],input[type=number],input[type=password],input[type=url],select,textarea{width:100%;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus{outline:3px solid rgba(42,157,143,.25);border-color:var(--teal3)}
+.inst{background:#fff;border-left:0;border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin:10px 0 18px}
+.inst ol{margin:6px 0 0;padding-left:22px}
+.status{margin-top:12px;font-weight:700}
+.status.ok{color:#3D6B2F}.status.q{color:#8A5A10}.status.err{color:var(--coral)}
+.timer{font-variant-numeric:tabular-nums}
+/* sortir */
+.sort{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+@media(max-width:820px){.sort{grid-template-columns:1fr}}
+.zone{background:#fff;border:2px dashed var(--line);border-radius:14px;padding:10px;min-height:160px}
+.zone h3{margin:2px 4px 10px;display:flex;justify-content:space-between}
+.zone.a{border-color:var(--teal3)}.zone.p{border-color:#264653}
+.zone.over{background:var(--mint)}
+.kartu{background:#fff;border:1px solid var(--line);border-radius:11px;padding:9px 11px;margin-bottom:8px;box-shadow:0 1px 3px rgba(0,0,0,.06);cursor:grab}
+.kartu .jam{font-weight:800;color:var(--coral)}
+.kartu .act{display:flex;gap:6px;margin-top:6px}
+.kartu.ok{border:2px solid var(--green)}.kartu.no{border:2px solid var(--coral)}
+.kartu .fb{font-size:13px;margin-top:6px;color:var(--muted)}
+.mini{font-size:13px;padding:4px 10px;border-radius:8px;border:1.5px solid var(--teal2);background:#fff;color:var(--teal2);font-weight:700;cursor:pointer}
+.mini.p{border-color:#264653;color:#264653}
+/* profil */
+.phone{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;max-width:620px}
+.phead{display:flex;gap:12px;align-items:center;margin-bottom:12px}
+.ava{width:52px;height:52px;border-radius:50%;background:var(--amber);display:grid;place-items:center;font-size:26px}
+.posts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.post{border:0;border-radius:10px;padding:0;overflow:hidden;cursor:pointer;background:#fff;text-align:left;box-shadow:0 0 0 1px var(--line)}
+.post .img{height:86px;display:grid;place-items:center;font-size:38px;color:#fff;position:relative}
+.post .cap{font-size:12.5px;padding:6px 8px;color:var(--ink);min-height:52px}
+.post.sel{box-shadow:0 0 0 3px var(--amber)}
+.post .ck{position:absolute;top:6px;right:8px;background:#fff;color:var(--green);border-radius:50%;width:22px;height:22px;display:none;place-items:center;font-size:14px;font-weight:900}
+.post.filled .ck{display:grid}
+.chk{display:flex;gap:8px;align-items:flex-start;margin:6px 0;cursor:pointer}
+.chk input{margin-top:4px;width:18px;height:18px;flex:none}
+/* tabel */
+table{border-collapse:collapse;width:100%;background:#fff;font-size:15px}
+th,td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+th{background:var(--teal);color:#fff;font-weight:700}
+tbody tr:nth-child(even){background:#F8FBFB}
+.tw{overflow-x:auto;border-radius:12px}
+/* audit */
+.aud{display:flex;gap:12px;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);padding:10px 0}
+.aud .tx{flex:1}
+.aud .alt{font-size:13px;color:#8A5A10;margin-top:3px}
+.tog{display:flex;border:1.5px solid var(--line);border-radius:10px;overflow:hidden;flex:none}
+.tog button{border:0;background:#fff;padding:7px 14px;font-weight:700;cursor:pointer}
+.tog button.on.y{background:var(--green);color:#fff}.tog button.on.n{background:var(--coral);color:#fff}
+.zonebox{border-radius:14px;padding:16px;color:#fff;font-weight:700}
+.z-h{background:var(--green)}.z-k{background:var(--amber);color:var(--teal)}.z-m{background:var(--coral)}.z-0{background:#B8C6C5}
+.stat{font-size:40px;font-weight:800;line-height:1}
+.choice{display:grid;gap:8px}
+.choice label{display:flex;gap:10px;align-items:flex-start;border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff;cursor:pointer}
+.choice label:has(input:checked){border-color:var(--teal3);background:var(--mint)}
+.choice input{margin-top:4px}
+.fbk{margin-top:8px;font-size:14px}
+.right{color:#3D6B2F;font-weight:700}.wrong{color:var(--coral);font-weight:700}
+.tf{display:flex;gap:8px}
+.tf label{border:1.5px solid var(--line);border-radius:9px;padding:6px 14px;cursor:pointer;background:#fff;font-weight:700}
+.tf label:has(input:checked){background:var(--teal2);color:#fff;border-color:var(--teal2)}
+.tf input{position:absolute;opacity:0;pointer-events:none}
+.q{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0}
+.pid main{max-width:1400px}.pid body,.pid{font-size:20px}.pid table{font-size:19px}
+.modal{position:fixed;inset:0;background:rgba(15,61,62,.55);display:grid;place-items:center;z-index:50;padding:16px}
+.modal .card{max-width:440px;width:100%}
+footer.ft{text-align:center;color:var(--muted);font-size:13px;padding:20px}
+</style>
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="#"><span class="logo">&#x1F463;</span><span>JEJAK<small>Modul 3 · Informatika &amp; KKA · Kelas IX</small></span></a>
+  <span class="sp"></span>
+  <span id="queueChip"></span>
+  <span id="userChip"></span>
+  <a class="chip" href="#guru" style="text-decoration:none">Guru</a>
+</div></header>
+<main id="app"></main>
+<footer class="ft">JEJAK · Jelajah Etika, Jejak, dan Aksi Kampanye digital · Ramli Jainal Muttaqin, S.Pd. · SMP Labschool Jakarta</footer>
+<div id="modalRoot"></div>
+
+<script>
+/* ===================== KONFIGURASI ===================== */
+/* Tempel URL Web App Apps Script di sini (lihat README). Kosong = mode coba (jawaban hanya tersimpan di perangkat). */
+const CONFIG = { APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbwzg6cQ3K1YSon_WZNMKECQEqp6IhqCjXC1IytiwGv-ICFELLxGhxEFZl55qr4OYGnTPA/exec' };
+
+/* ===================== PENYIMPANAN ===================== */
+const mem = {};
+const store = {
+  get(k, d) { try { const v = localStorage.getItem('jejak.' + k); return v ? JSON.parse(v) : (k in mem ? mem[k] : d); } catch (e) { return k in mem ? mem[k] : d; } },
+  set(k, v) { mem[k] = v; try { localStorage.setItem('jejak.' + k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { delete mem[k]; try { localStorage.removeItem('jejak.' + k); } catch (e) {} },
+  clearPrefix(p) { Object.keys(mem).forEach(k => k.startsWith(p) && delete mem[k]); try { Object.keys(localStorage).forEach(k => k.startsWith('jejak.' + p) && localStorage.removeItem(k)); } catch (e) {} },
+};
+const scriptURL = () => (store.get('guru.url', '') || CONFIG.APPS_SCRIPT_URL || '').trim();
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+
+/* ===================== DATA MODUL ===================== */
+const PERTEMUAN = [
+  { n: 1, judul: 'Jejakku, Citraku', sub: 'Mengenal dan mengaudit jejak digital pribadi', tp: 'Informatika LD.9.1–9.2',
+    tujuan: ['Membedakan jejak aktif dan jejak pasif dari aktivitas sehari-hari.', 'Menganalisis bagaimana kepingan jejak disatukan dan dibaca manusia maupun algoritma KA.', 'Mengaudit jejak digital sendiri dan memilih satu tindakan perbaikan.'],
+    kegiatan: [
+      { id: 'pretest', judul: 'Pre-Test', jenis: 'individu', menit: 5, r: 'pretest', desc: '5 soal singkat sebelum mulai.' },
+      { id: 'sortir', judul: 'Sortir "24 Jam Raka"', jenis: 'kelompok', menit: 25, r: 'sortir', desc: 'Pilah 16 aktivitas Raka: jejak aktif atau pasif?' },
+      { id: 'detektif', judul: 'Detektif Jejak: @raka.ix', jenis: 'kelompok', menit: 15, r: 'detektif', desc: 'Selidiki 6 unggahan akun fiktif. Apa yang bisa ditebak orang asing?' },
+      { id: 'algoritma', judul: 'Jadi Algoritma', jenis: 'kelompok', menit: 10, r: 'algoritma', desc: 'Berperan sebagai sistem rekomendasi KA.' },
+      { id: 'audit', judul: 'Audit Jejakku', jenis: 'individu', menit: 30, r: 'audit', desc: 'Periksa jejakmu sendiri secara privat. Hanya skor dan rencana yang dikirim.' },
+      { id: 'posttest', judul: 'Post-Test', jenis: 'individu', menit: 6, r: 'posttest', desc: '3 kasus untuk dianalisis.' },
+      { id: 'tiket', judul: 'Tiket Keluar 3-2-1', jenis: 'individu', menit: 4, r: 'tiket', desc: '3 hal baru, 2 tindakan, 1 pertanyaan.' },
+      { id: 'wawancara', judul: 'Tugas Rumah: Wawancara Keluarga', jenis: 'individu', menit: 0, r: 'wawancara', desc: 'Dikerjakan di rumah, bahan Pertemuan 2.' },
+    ] },
+  { n: 2, judul: 'Jejak Positif & Brief Kreatif', sub: 'Mengelola jejak digital dan merancang kampanye', tp: 'Informatika LD.9.3 · KKA LD.9.1',
+    tujuan: ['Menerapkan strategi mengelola jejak digital yang positif.', 'Merencanakan kampanye video secara sistematis melalui brief kreatif.'],
+    kegiatan: [
+      { id: 'galeri', judul: 'Galeri Cerita Keluarga', jenis: 'individu', desc: 'Membaca hasil wawancara keluarga teman sekelas.' },
+      { id: 'simpan', judul: 'Hapus, Arsip, atau Biarkan?', jenis: 'kelompok', desc: 'Memutuskan nasib 12 unggahan lama beserta alasannya.' },
+      { id: 'bio', judul: 'Bio Positif', jenis: 'individu', desc: 'Menyusun profil daring yang aman dan membangun citra baik.' },
+      { id: 'brief', judul: 'Brief Kreatif Kampanye', jenis: 'kelompok', desc: 'Tujuan, audiens, pesan kunci, format, dan pembagian tugas.' },
+      { id: 'tiket', judul: 'Tiket Keluar 3-2-1', jenis: 'individu', menit: 4, r: 'tiket', desc: '3 hal baru, 2 tindakan, 1 pertanyaan.' },
+    ] },
+  { n: 3, judul: 'Stop Perundungan Digital', sub: 'Bentuk, dampak, dan cara menolong', tp: 'Informatika LD.9.4–9.5',
+    tujuan: ['Mengidentifikasi bentuk perundungan digital beserta dampaknya.', 'Mengevaluasi dampak psikologis dan sosial perundungan digital bagi semua pihak.'],
+    kegiatan: [
+      { id: 'taksonomi', judul: 'Cocokkan Kasus', jenis: 'kelompok', desc: 'Mencocokkan 8 kasus dengan bentuk perundungan digital.' },
+      { id: 'saksi', judul: 'Kalau Aku Jadi Saksi', jenis: 'individu', desc: 'Simulasi bercabang: pilihanmu menentukan akhir cerita.' },
+      { id: 'dampak', judul: 'Peta Dampak', jenis: 'kelompok', desc: 'Dampak bagi korban, pelaku, saksi, dan sekolah.' },
+      { id: 'lapor', judul: 'Jalur Pelaporan', jenis: 'individu', desc: 'Menyusun langkah melapor dan menolong teman.' },
+      { id: 'tiket', judul: 'Tiket Keluar 3-2-1', jenis: 'individu', menit: 4, r: 'tiket', desc: '3 hal baru, 2 tindakan, 1 pertanyaan.' },
+    ] },
+  { n: 4, judul: 'Produksi Audio & Video', sub: 'Merekam dan menyunting konten kampanye', tp: 'KKA LD.9.2–9.3',
+    tujuan: ['Menerapkan teknik editing audio untuk konten kampanye.', 'Menerapkan teknik editing video termasuk multi-track dan color grading dasar.'],
+    kegiatan: [
+      { id: 'storyboard', judul: 'Naskah & Storyboard', jenis: 'kelompok', desc: 'Storyboard 6 panel dan naskah voice-over.' },
+      { id: 'audio', judul: 'Checklist Rekam Audio', jenis: 'kelompok', desc: 'Noise reduction, normalisasi, dan kejernihan suara.' },
+      { id: 'video', judul: 'Checklist Sunting Video', jenis: 'kelompok', desc: 'B-roll, transisi, lower third, dan multi-track.' },
+      { id: 'draf', judul: 'Unggah Tautan Draf', jenis: 'kelompok', desc: 'Tautan Google Drive draf video versi 1.' },
+      { id: 'tiket', judul: 'Tiket Keluar 3-2-1', jenis: 'individu', menit: 4, r: 'tiket', desc: '3 hal baru, 2 tindakan, 1 pertanyaan.' },
+    ] },
+  { n: 5, judul: 'Integrasi & Peer Review', sub: 'Menyatukan multimedia dan saling menilai', tp: 'KKA LD.9.4–9.5',
+    tujuan: ['Memproduksi konten multimedia terintegrasi (audio, video, grafis).', 'Mengevaluasi kualitas konten berdasarkan kriteria profesional.'],
+    kegiatan: [
+      { id: 'v1', judul: 'Tautan Video Versi 1', jenis: 'kelompok', desc: 'Mengirim tautan video yang sudah terintegrasi.' },
+      { id: 'review', judul: 'Peer Review Berbasis Rubrik', jenis: 'individu', desc: 'Menilai 2 video kelompok lain dengan rubrik 4 aspek.' },
+      { id: 'revisi', judul: 'Rencana Revisi', jenis: 'kelompok', desc: 'Menindaklanjuti masukan dari kelompok lain.' },
+      { id: 'tiket', judul: 'Tiket Keluar 3-2-1', jenis: 'individu', menit: 4, r: 'tiket', desc: '3 hal baru, 2 tindakan, 1 pertanyaan.' },
+    ] },
+  { n: 6, judul: 'Luncurkan Kampanye', sub: 'Presentasi dan diseminasi ke warga sekolah', tp: 'Informatika LD.9.6 · KKA LD.9.6',
+    tujuan: ['Merancang dan melaksanakan kampanye nyata anti-perundungan digital.', 'Mempresentasikan proyek konten digital secara komprehensif kepada audiens.'],
+    kegiatan: [
+      { id: 'final', judul: 'Tautan Video Final', jenis: 'kelompok', desc: 'Video kampanye siap tayang di mading digital.' },
+      { id: 'diseminasi', judul: 'Rencana Diseminasi', jenis: 'kelompok', desc: 'Kanal, jadwal, dan target audiens kampanye.' },
+      { id: 'nilai', judul: 'Penilaian Presentasi Antarkelompok', jenis: 'individu', desc: 'Menilai presentasi kelompok lain.' },
+      { id: 'refleksi', judul: 'Refleksi Akhir Modul', jenis: 'individu', desc: 'Perubahan diri sebagai warga dan kreator digital.' },
+      { id: 'tiket', judul: 'Tiket Keluar 3-2-1', jenis: 'individu', menit: 4, r: 'tiket', desc: '3 hal baru, 2 tindakan, 1 pertanyaan.' },
+    ] },
+];
+const KELAS = ['IX-A', 'IX-B', 'IX-C', 'IX-D', 'IX-E', 'IX-F', 'IX-G'];
+const PROYEK = 'Bagaimana kita, sebagai kreator, membuat kampanye video yang mengajak warga Labschool meninggalkan jejak digital positif dan berhenti merundung?';
+
+const KARTU = [
+  ['06.15', 'Alarm berbunyi; aplikasi kesehatan mencatat lama tidur Raka semalam.', 'P', 'Data tidur direkam otomatis oleh aplikasi; Raka tidak membagikannya dengan sengaja.'],
+  ['06.40', 'Raka mengunggah foto sarapan ke story dengan stiker lokasi.', 'A', 'Raka sengaja mengunggah, termasuk lokasinya.'],
+  ['07.05', 'Aplikasi ojek daring merekam rute dari rumah Raka ke sekolah.', 'P', 'Rute direkam aplikasi sebagai bagian dari layanan.'],
+  ['07.30', 'Raka mengisi formulir daring pendaftaran lomba (nama, kelas, nomor WA).', 'A', 'Raka sengaja mengetik dan mengirim datanya.'],
+  ['09.50', 'Raka mencari "cara cepat hafal rumus luas lingkaran"; riwayatnya tersimpan.', 'P', 'Raka mengetik untuk mencari, tetapi riwayat pencariannya tersimpan tanpa ia bagikan ke siapa pun.'],
+  ['10.10', 'Raka memberi tanda suka (like) pada video temannya.', 'A', 'Like adalah tindakan sengaja yang terlihat orang lain.'],
+  ['12.00', 'Raka menonton tiga video gim sampai habis; aplikasi mencatat lama tontonan.', 'P', 'Lama tontonan direkam otomatis dan dipakai algoritma.'],
+  ['12.20', 'Raka menulis komentar di salah satu video gim tersebut.', 'A', 'Komentar sengaja ditulis dan dibaca publik.'],
+  ['13.15', 'Situs belanja menyimpan cookie saat Raka melihat-lihat sepatu futsal.', 'P', 'Cookie disimpan situs tanpa Raka sadari.'],
+  ['14.30', 'Raka mengirim pesan suara (voice note) di grup kelas.', 'A', 'Raka sengaja mengirim pesan.'],
+  ['15.00', 'Raka menandai (tag) temannya di foto latihan futsal.', 'A', 'Jejak aktif bagi Raka, tetapi sekaligus membuat jejak bagi temannya tanpa persetujuan. Kartu diskusi!', true],
+  ['16.10', 'Gim baru meminta izin membaca kontak; Raka menekan "Izinkan".', 'P', 'Menekan tombol itu aktif, tetapi data kontak lalu diambil terus-menerus secara pasif. Kartu diskusi!', true],
+  ['18.45', 'Raka memberi bintang 5 dan ulasan untuk warung makan di aplikasi peta.', 'A', 'Ulasan sengaja ditulis dan dipublikasikan.'],
+  ['19.30', 'Alamat IP perangkat Raka tercatat saat ia masuk ke akun belajar.', 'P', 'Alamat IP tercatat otomatis oleh server.'],
+  ['20.00', 'Raka mengikuti kuis "Kamu cocok jadi apa?" dan mengisi tanggal lahirnya.', 'A', 'Raka sengaja mengisi data pribadinya.'],
+  ['21.30', 'Jam pintar mencatat langkah kaki dan detak jantung Raka hari ini.', 'P', 'Data tubuh direkam otomatis oleh perangkat.'],
+];
+const POSTS = [
+  { e: '&#x1F3EB;', c: '#0F7C7A', isi: 'Foto Raka berseragam di depan gerbang sekolah; logo dan nama sekolah terbaca.', cap: 'Hari pertama kelas IX! Siap tempur.', kunci: 'Nama sekolah dan kelas → orang asing tahu di mana Raka berada setiap pagi.' },
+  { e: '&#x1F3CA;', c: '#2A9D8F', isi: 'Story video kolam renang dengan stiker lokasi kolam.', cap: 'Otw les renang, tiap Kamis jam 4 sore.', kunci: 'Jadwal rutin + lokasi → keberadaan Raka bisa ditebak pada jam tertentu.' },
+  { e: '&#x1F382;', c: '#E76F51', isi: 'Foto kue ulang tahun dengan lilin angka 15.', cap: 'Sweet fifteen! 14 Agustus selalu jadi hari favoritku.', kunci: 'Tanggal lahir dan usia → sering dipakai untuk verifikasi akun atau ditebak sebagai kata sandi.' },
+  { e: '&#x1F431;', c: '#6E9D5F', isi: 'Foto kucing di teras rumah; nomor rumah "27" terlihat di dinding.', cap: 'Mochi, kucing kesayanganku sejak SD.', kunci: 'Sebagian alamat rumah + nama hewan peliharaan (jawaban pertanyaan keamanan akun yang umum).' },
+  { e: '&#x2708;&#xFE0F;', c: '#264653', isi: 'Foto tiket pesawat; kode pemesanan dan nama lengkap terlihat.', cap: 'Liburan ke Bali minggu depan! Rumah kosong seminggu, hehe.', kunci: 'Rumah kosong (risiko pencurian), nama lengkap, dan kode pemesanan yang bisa disalahgunakan.' },
+  { e: '&#x1F4AC;', c: '#C8962A', isi: 'Komentar Raka di unggahan teman, dua tahun lalu.', cap: 'Gendut banget lo, wkwk.', kunci: 'Jejak negatif masa lalu tetap terbaca panitia beasiswa atau sekolah, dan menyakiti teman (perundungan, dibahas di Pertemuan 3).' },
+];
+const PEMBACA = ['Teman & keluarga', 'Sekolah, kampus, beasiswa, perusahaan', 'Platform & algoritma KA', 'Orang tak dikenal & penipu'];
+const LOG = [
+  ['Senin, 19.10', 'Tutorial trik futsal: elastico', '8 dari 8 menit (habis)'],
+  ['Senin, 19.20', 'Berita ekonomi hari ini', '15 detik dari 10 menit (dilewati)'],
+  ['Selasa, 20.00', 'Review sepatu futsal 300 ribuan', '12 dari 12 menit (habis)'],
+  ['Rabu, 20.30', 'Cuplikan pertandingan liga futsal', '15 dari 15 menit (habis)'],
+  ['Rabu, 20.50', 'Resep nasi goreng kampung', '20 detik dari 6 menit (dilewati)'],
+  ['Kamis, 21.00', 'Tips jadi kiper futsal', '9 dari 10 menit'],
+];
+const KANDIDAT = [
+  ['Teknik dribel futsal untuk pemula', 1], ['Berita ekonomi pekan ini', 0], ['Review sepatu futsal di bawah 500 ribu', 1], ['Resep mi goreng 5 menit', 0],
+  ['Kiper futsal: cara menghadang tendangan keras', 1], ['Tutorial merias wajah natural', 0], ['Cuplikan liga futsal pekan lalu', 1], ['Analisis saham untuk pemula', 0],
+];
+const AUDIT = [
+  ['Saat namaku dicari dalam tanda kutip di mesin pencari, tidak muncul informasi pribadi yang tidak ingin kubagikan.', null, 'Minta bantuan orang tua untuk meminta penghapusan informasi pribadi yang muncul.'],
+  ['Akun media sosialku diatur privat atau hanya untuk teman.', 'Belum punya medsos? Periksa: akun Google/belajar.id-ku tidak menampilkan info pribadi ke publik.', 'Ubah akun menjadi privat.'],
+  ['Bio/profilku tidak memuat nama sekolah lengkap, kelas, alamat, atau nomor telepon.', 'Belum punya medsos? Periksa: profil WhatsApp-ku (foto, info) hanya terlihat oleh kontak.', 'Hapus nama sekolah, kelas, dan nomor telepon dari bio.'],
+  ['Fitur lokasi otomatis (geotag) pada foto dan unggahanku dimatikan.', 'Belum punya medsos? Periksa: aplikasi kamera di HP-ku tidak menyimpan lokasi.', 'Matikan lokasi otomatis di kamera dan aplikasi media sosial.'],
+  ['Aku tidak pernah mengunggah foto yang memperlihatkan alamat, nomor rumah, plat nomor, atau dokumen (tiket, rapor, kartu keluarga).', null, 'Arsipkan atau hapus foto yang memperlihatkan alamat atau dokumen.'],
+  ['Aku tahu aplikasi mana saja di ponselku yang punya izin kamera, kontak, dan lokasi.', null, 'Periksa dan cabut izin aplikasi yang tidak diperlukan.'],
+  ['Aku hanya menerima permintaan pertemanan/pengikut dari orang yang benar-benar kukenal.', 'Belum punya medsos? Periksa: hanya kontak yang kukenal yang bisa menambahkanku ke grup WhatsApp.', 'Hapus pengikut atau teman yang tidak dikenal.'],
+  ['Tidak ada unggahan atau komentarku yang membuatku malu jika dibaca guru, orang tua, atau panitia beasiswa.', null, 'Arsipkan unggahan atau komentar lama yang memalukan.'],
+  ['Aku meminta izin sebelum mengunggah atau menandai foto teman.', null, 'Mulai minta izin sebelum mengunggah atau menandai teman.'],
+  ['Aku memakai kata sandi berbeda untuk akun penting dan mengaktifkan verifikasi dua langkah.', null, 'Aktifkan verifikasi dua langkah dan ganti kata sandi yang sama.'],
+];
+
+/* ===================== PROFIL & PROGRES ===================== */
+const profil = () => store.get('profil', null);
+const doneKey = (p, k) => `P${p}-${k}`;
+const isDone = (p, k) => !!store.get('done', {})[doneKey(p, k)];
+function markDone(p, k, info) { const d = store.get('done', {}); d[doneKey(p, k)] = info; store.set('done', d); }
+
+function renderChips() {
+  const u = profil();
+  $('#userChip').innerHTML = u ? `<button class="chip" id="chipUser" title="Ganti murid">${esc(u.nama.split(' ')[0])} · ${esc(u.kelas)}/${esc(u.absen)}</button>` : '';
+  const q = store.get('antrean', []);
+  $('#queueChip').innerHTML = q.length ? `<button class="chip warn" id="chipQueue">${q.length} belum terkirim · kirim ulang</button>` : '';
+}
+document.addEventListener('click', e => {
+  if (e.target.id === 'chipUser') confirmBox('Ganti murid?', 'Data identitas dan jawaban yang belum selesai di komputer ini akan dihapus. Jawaban yang sudah terkirim aman.', 'Ya, ganti murid', () => { logout(); });
+  if (e.target.id === 'chipQueue') flushQueue(true);
+});
+function logout() { store.del('profil'); store.del('done'); store.clearPrefix('draft.'); location.hash = ''; render(); }
+function confirmBox(title, text, okLabel, onOk) {
+  $('#modalRoot').innerHTML = `<div class="modal"><div class="card"><h3 style="margin-top:0">${esc(title)}</h3><p>${esc(text)}</p><div class="row"><button class="btn" id="mOk">${esc(okLabel)}</button><button class="btn ghost" id="mNo">Batal</button></div></div></div>`;
+  $('#mNo').onclick = () => $('#modalRoot').innerHTML = '';
+  $('#mOk').onclick = () => { $('#modalRoot').innerHTML = ''; onOk(); };
+}
+
+/* ===================== PENGIRIMAN ===================== */
+async function postPayload(p) {
+  const url = scriptURL();
+  if (!url) return 'lokal';
+  const res = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(p) });
+  const j = await res.json();
+  if (!j.ok) throw new Error(j.pesan || 'gagal');
+  return 'terkirim';
+}
+async function kirim(pn, kg, data) {
+  const u = profil();
+  const payload = { waktu: new Date().toISOString(), nama: u.nama, kelas: u.kelas, absen: u.absen, kelompok: u.kelompok || '', pertemuan: 'P' + pn, kegiatan: kg.id, judul: kg.judul,
+    skor: data.skor ?? '', maks: data.maks ?? '', ringkasan: data.ringkasan || '', jawaban: JSON.stringify(data.jawaban || {}) };
+  const riwayat = store.get('riwayat', []); riwayat.push(payload); store.set('riwayat', riwayat.slice(-200));
+  let hasil;
+  try { hasil = await postPayload(payload); } catch (e) { const q = store.get('antrean', []); q.push(payload); store.set('antrean', q); hasil = 'antre'; }
+  markDone(pn, kg.id, { skor: payload.skor, maks: payload.maks, waktu: payload.waktu });
+  store.del(`draft.P${pn}-${kg.id}`);
+  renderChips();
+  return hasil;
+}
+async function flushQueue(manual) {
+  let q = store.get('antrean', []); if (!q.length || !scriptURL()) { if (manual && !scriptURL()) alertBox('Belum terhubung', 'Web ini belum disambungkan ke Google Sheet (mode coba). Hubungi guru.'); return; }
+  const sisa = [];
+  for (const p of q) { try { await postPayload(p); } catch (e) { sisa.push(p); } }
+  store.set('antrean', sisa); renderChips();
+  if (manual) alertBox(sisa.length ? 'Masih ada yang gagal' : 'Berhasil', sisa.length ? `${sisa.length} jawaban belum terkirim. Periksa internet lalu coba lagi.` : 'Semua jawaban sudah terkirim ke guru.');
+}
+function alertBox(title, text) { $('#modalRoot').innerHTML = `<div class="modal"><div class="card"><h3 style="margin-top:0">${esc(title)}</h3><p>${esc(text)}</p><button class="btn" id="mOk">Oke</button></div></div>`; $('#mOk').onclick = () => $('#modalRoot').innerHTML = ''; }
+window.addEventListener('online', () => flushQueue(false));
+const statusMsg = h => ({ terkirim: ['ok', 'Terkirim ke guru. Terima kasih!'], antre: ['q', 'Internet bermasalah: jawaban disimpan dan akan dikirim ulang otomatis (atau tekan tombol oranye di atas).'], lokal: ['q', 'Mode coba: web belum disambungkan ke Google Sheet, jawaban hanya tersimpan di perangkat ini.'] }[h]);
+
+/* ===================== DRAF OTOMATIS ===================== */
+function bindDraft(root, key) {
+  const d = store.get('draft.' + key, {});
+  $$('[name]', root).forEach(el => { if (el.dataset.nodraft !== undefined) return; if (d[el.name] !== undefined) { if (el.type === 'checkbox' || el.type === 'radio') el.checked = (d[el.name + '::' + el.value] === true); else el.value = d[el.name]; } });
+  root.addEventListener('input', e => { const el = e.target; if (!el.name || el.dataset.nodraft !== undefined) return; const cur = store.get('draft.' + key, {}); if (el.type === 'checkbox' || el.type === 'radio') { if (el.type === 'radio') $$(`[name="${el.name}"]`, root).forEach(r => cur[r.name + '::' + r.value] = r.checked); else cur[el.name + '::' + el.value] = el.checked; cur[el.name] = 1; } else cur[el.name] = el.value; store.set('draft.' + key, cur); });
+}
+const val = (root, n) => ($(`[name="${n}"]`, root)?.value || '').trim();
+
+/* ===================== HALAMAN ===================== */
+function render() {
+  renderChips();
+  const h = decodeURIComponent(location.hash.slice(1));
+  const app = $('#app');
+  document.documentElement.classList.toggle('pid', h === 'guru' && store.get('guru.pid', false));
+  if (h === 'guru') return viewGuru(app);
+  if (!profil()) return viewProfil(app);
+  let m;
+  if ((m = h.match(/^p(\d)$/))) return viewPertemuan(app, +m[1]);
+  if ((m = h.match(/^p(\d)-([a-z0-9]+)$/))) return viewKegiatan(app, +m[1], m[2]);
+  return viewBeranda(app);
+}
+window.addEventListener('hashchange', () => { render(); window.scrollTo(0, 0); });
+
+function viewProfil(app) {
+  app.innerHTML = `<div class="grid g2" style="align-items:start">
+    <div class="hero"><div class="tag">Modul 3 · Informatika &amp; KKA</div><h1 style="margin-top:8px">Selamat datang di JEJAK</h1>
+    <p>Di sini kamu akan mengerjakan semua kegiatan Modul 3: mengenali jejak digital, melawan perundungan digital, sampai membuat video kampanye.</p></div>
+    <form class="card" id="fProfil"><h2 style="margin-top:0">Isi identitasmu</h2>
+      <label class="f" for="nama">Nama lengkap</label><input type="text" id="nama" required autocomplete="off">
+      <div class="grid g2"><div><label class="f" for="kelas">Kelas</label><select id="kelas" required><option value="">Pilih…</option>${KELAS.map(k => `<option>${k}</option>`).join('')}</select></div>
+      <div><label class="f" for="absen">No. absen</label><input type="number" id="absen" min="1" max="40" required></div></div>
+      <label class="f" for="kelompok">Nomor kelompok (dari guru)</label><select id="kelompok"><option value="">Belum ada</option>${[1,2,3,4,5,6,7,8].map(k => `<option>${k}</option>`).join('')}</select>
+      <p class="muted" style="font-size:14px">Komputer lab dipakai bergantian. Saat selesai, tekan namamu di pojok kanan atas lalu pilih <b>Ganti murid</b>.</p>
+      <button class="btn" type="submit">Mulai</button></form></div>`;
+  $('#fProfil').onsubmit = e => { e.preventDefault(); store.set('profil', { nama: $('#nama').value.trim(), kelas: $('#kelas').value, absen: $('#absen').value, kelompok: $('#kelompok').value }); render(); };
+}
+
+function progres(p) { const ks = p.kegiatan.filter(k => k.r); const d = ks.filter(k => isDone(p.n, k.id)).length; return [d, ks.length]; }
+function viewBeranda(app) {
+  app.innerHTML = `<section class="hero"><div class="tag">Proyek Modul 3</div><div class="pq">"${esc(PROYEK)}"</div>
+    <p style="opacity:.85;margin-bottom:0">6 pertemuan · produk akhir: video kampanye untuk mading digital sekolah</p></section>
+    <h2>Pertemuan</h2><div class="grid g3">${PERTEMUAN.map(p => { const [d, t] = progres(p); const siap = p.kegiatan.some(k => k.r && k.id !== 'tiket');
+      return `<a class="card pcard" href="#p${p.n}"><div class="row" style="justify-content:space-between"><span class="pnum">P${p.n}</span>${siap ? '<span class="badge">Tersedia</span>' : '<span class="badge soon">Kerangka</span>'}</div>
+      <h3>${esc(p.judul)}</h3><div class="muted" style="font-size:14px">${esc(p.sub)}</div><div class="bar"><i style="width:${t ? d / t * 100 : 0}%"></i></div><div class="muted" style="font-size:13px;margin-top:4px">${d}/${t} kegiatan selesai</div></a>`; }).join('')}</div>`;
+}
+
+function viewPertemuan(app, n) {
+  const p = PERTEMUAN[n - 1]; if (!p) return viewBeranda(app);
+  app.innerHTML = `<div class="crumb"><a href="#">Beranda</a> › Pertemuan ${n}</div>
+    <h1>P${n} · ${esc(p.judul)}</h1><div class="muted">${esc(p.sub)} · ${esc(p.tp)}</div>
+    <div class="note"><b>Hari ini kamu akan:</b><ul style="margin:6px 0 0;padding-left:20px">${p.tujuan.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>
+    <h2>Kegiatan</h2><ul class="klist">${p.kegiatan.map((k, i) => { const done = isDone(n, k.id); const ok = !!k.r;
+      const inner = `<span class="n">${done ? '&#10003;' : i + 1}</span><span class="t"><b>${esc(k.judul)}</b><span class="m">${esc(k.desc)}</span></span>
+        <span class="row" style="gap:6px">${k.jenis === 'kelompok' ? '<span class="badge grp">Kelompok</span>' : ''}${k.menit ? `<span class="badge">${k.menit}'</span>` : ''}${!ok ? '<span class="badge soon">Segera</span>' : done ? '<span class="badge done">Selesai</span>' : ''}</span>`;
+      return ok ? `<li><a class="kitem ${done ? 'isdone' : ''}" href="#p${n}-${k.id}">${inner}</a></li>` : `<li><div class="kitem soon">${inner}</div></li>`; }).join('')}</ul>`;
+}
+
+function viewKegiatan(app, n, id) {
+  const p = PERTEMUAN[n - 1]; const kg = p?.kegiatan.find(k => k.id === id);
+  if (!kg || !kg.r) return viewPertemuan(app, n);
+  const idx = p.kegiatan.indexOf(kg); const next = p.kegiatan.slice(idx + 1).find(k => k.r);
+  app.innerHTML = `<div class="crumb"><a href="#">Beranda</a> › <a href="#p${n}">Pertemuan ${n}</a> › ${esc(kg.judul)}</div>
+    <div class="row" style="justify-content:space-between"><h1>${esc(kg.judul)}</h1><span class="row">${kg.jenis === 'kelompok' ? '<span class="badge grp">Kelompok · cukup 1 anggota mengirim</span>' : '<span class="badge">Individu</span>'}${kg.menit ? `<span class="badge">${kg.menit} menit</span>` : ''}</span></div>
+    ${isDone(n, id) ? '<div class="note amber">Kamu sudah pernah mengirim kegiatan ini. Kalau mengirim lagi, guru akan memakai kiriman terbaru.</div>' : ''}
+    <div id="act"></div>
+    <div class="row" style="justify-content:space-between;margin-top:26px"><a class="btn ghost" href="#p${n}">← Daftar kegiatan</a>${next ? `<a class="btn ghost" href="#p${n}-${next.id}">${esc(next.judul)} →</a>` : ''}</div>`;
+  const root = $('#act');
+  R[kg.r](root, { n, kg, key: `P${n}-${kg.id}` });
+}
+
+/* tombol kirim standar */
+function kirimBar(root, label = 'Kirim ke guru') { const d = document.createElement('div'); d.innerHTML = `<div class="row" style="margin-top:18px"><button class="btn amber big" data-kirim>${label}</button></div><div class="status" data-status></div>`; root.appendChild(d); return d; }
+async function doKirim(root, ctx, data, after) {
+  const b = $('[data-kirim]', root); b.disabled = true; b.textContent = 'Mengirim…';
+  const h = await kirim(ctx.n, ctx.kg, data); const [cls, msg] = statusMsg(h);
+  const s = $('[data-status]', root); s.className = 'status ' + cls; s.textContent = msg; b.textContent = 'Kirim lagi'; b.disabled = false;
+  if (after) after();
+}
+const anggotaField = (root) => profil().kelompok ? '' : `<label class="f">Nomor kelompok</label><select name="kelompok_isi">${[1,2,3,4,5,6,7,8].map(k => `<option>${k}</option>`).join('')}</select>`;
+
+/* ===================== KEGIATAN ===================== */
+const R = {};
+
+R.pretest = (root, ctx) => {
+  const Q = [['Jika unggahan sudah dihapus, jejaknya pasti hilang dari internet.', 'S', 'Salinan bisa sudah tersebar lewat tangkapan layar, unggahan ulang, atau arsip.'],
+    ['Orang yang hanya menonton video tanpa mengunggah apa pun tidak meninggalkan jejak digital.', 'S', 'Lama tontonan, riwayat, dan alamat IP tetap terekam (jejak pasif).'],
+    ['Akun yang dikunci (privat) tetap meninggalkan jejak digital.', 'B', 'Platform tetap merekam aktivitas, dan pengikut bisa membagikan ulang.'],
+    ['Foto berseragam sekolah bisa membantu orang asing mengetahui tempat kita bersekolah.', 'B', 'Logo dan nama sekolah adalah petunjuk lokasi.']];
+  root.innerHTML = `<div class="inst">Jawab sejujurnya. Ini bukan untuk nilai, tetapi supaya guru tahu titik awalmu.</div>
+    ${Q.map((q, i) => `<div class="q"><b>${i + 1}.</b> ${esc(q[0])}<div class="tf" style="margin-top:8px"><label><input type="radio" name="q${i}" value="B">Benar</label><label><input type="radio" name="q${i}" value="S">Salah</label></div><div class="fbk" data-fb="${i}"></div></div>`).join('')}
+    <div class="q"><b>5.</b> Menurutmu, bagaimana aplikasi video tahu tontonan yang kamu sukai?<textarea name="q4" placeholder="Tulis singkat…"></textarea></div>`;
+  bindDraft(root, ctx.key);
+  const kb = kirimBar(root);
+  $('[data-kirim]', kb).onclick = () => {
+    const ans = Q.map((_, i) => ($(`[name=q${i}]:checked`, root) || {}).value || '');
+    if (ans.some(a => !a) || !val(root, 'q4')) return alertBox('Belum lengkap', 'Jawab semua soal dulu, ya.');
+    const skor = ans.filter((a, i) => a === Q[i][1]).length;
+    doKirim(root, ctx, { skor, maks: 4, ringkasan: `B/S ${skor}/4 · ${val(root, 'q4')}`, jawaban: { bs: ans, q5: val(root, 'q4') } }, () => {
+      Q.forEach((q, i) => { $(`[data-fb="${i}"]`, root).innerHTML = (ans[i] === q[1] ? '<span class="right">Tepat.</span> ' : '<span class="wrong">Belum tepat.</span> ') + esc(q[2]); });
+    });
+  };
+};
+
+R.sortir = (root, ctx) => {
+  const key = 'draft.' + ctx.key + '.pos';
+  let pos = store.get(key, {}); let checked = false;
+  root.innerHTML = `<div class="inst"><b>Tugas kelompok:</b><ol><li>Baca setiap kartu aktivitas Raka.</li><li>Tekan <b>Aktif</b> jika Raka <u>sengaja membagikan</u> data, atau <b>Pasif</b> jika data <u>terekam tanpa ia sadari</u>. Kartu juga bisa diseret.</li><li>Setelah semua dipilah, tekan <b>Periksa</b>, lalu isi pertanyaan di bawahnya dan kirim.</li></ol></div>
+    <div class="sort"><div class="zone" data-z=""><h3>Belum dipilah <span class="badge" data-c=""></span></h3><div data-list=""></div></div>
+    <div class="zone a" data-z="A"><h3>Jejak Aktif <span class="badge" data-c="A"></span></h3><div class="muted" style="font-size:13px;margin:-6px 4px 8px">sengaja dibagikan</div><div data-list="A"></div></div>
+    <div class="zone p" data-z="P"><h3>Jejak Pasif <span class="badge" data-c="P"></span></h3><div class="muted" style="font-size:13px;margin:-6px 4px 8px">terekam tanpa disadari</div><div data-list="P"></div></div></div>
+    <div class="row" style="margin-top:14px"><button class="btn" data-cek disabled>Periksa</button><span class="muted" data-info></span></div>
+    <div data-after style="display:none"><h2>Setelah diperiksa</h2>
+      <label class="f">Kartu yang paling membuat kelompok kalian ragu, dan mengapa?</label><textarea name="ragu"></textarea>
+      <label class="f">Setelah melihat demonstrasi guru (halaman "Aktivitas Saya"): apa kesimpulan kalian tentang jejak pasif?</label><textarea name="kesimpulan"></textarea>
+      ${anggotaField()}<label class="f">Nama anggota kelompok</label><input type="text" name="anggota" placeholder="contoh: Raka, Nadia, Dimas, Sari"></div>`;
+  const draw = () => {
+    ['', 'A', 'P'].forEach(z => {
+      const list = $(`[data-list="${z}"]`, root); const items = KARTU.map((k, i) => [k, i]).filter(([k, i]) => (pos[i] || '') === z);
+      $(`[data-c="${z}"]`, root).textContent = items.length;
+      list.innerHTML = items.map(([k, i]) => { const st = checked ? ((k[4] || pos[i] === k[2]) ? 'ok' : 'no') : '';
+        return `<div class="kartu ${st}" draggable="true" data-i="${i}"><span class="jam">${k[0]}</span> ${esc(k[1])}
+          <div class="act">${z === '' ? `<button class="mini" data-to="A" data-i="${i}">Aktif</button><button class="mini p" data-to="P" data-i="${i}">Pasif</button>` : checked ? '' : `<button class="mini" data-to="" data-i="${i}">↩ Kembalikan</button>`}</div>
+          ${checked && (st === 'no' || k[4]) ? `<div class="fb">${st === 'no' ? '<b class="wrong">Kurang tepat.</b> ' : '<b>Diskusikan:</b> '}${esc(k[3])}</div>` : ''}</div>`; }).join('') || '<div class="muted" style="font-size:14px;padding:6px">—</div>';
+    });
+    const all = KARTU.every((_, i) => pos[i]);
+    $('[data-cek]', root).disabled = !all || checked;
+    $('[data-info]', root).textContent = all ? '' : `${KARTU.filter((_, i) => !pos[i]).length} kartu belum dipilah`;
+  };
+  root.addEventListener('click', e => { const b = e.target.closest('[data-to]'); if (!b || checked) return; pos[b.dataset.i] = b.dataset.to; store.set(key, pos); draw(); });
+  root.addEventListener('dragstart', e => { const c = e.target.closest('.kartu'); if (c) e.dataTransfer.setData('text/plain', c.dataset.i); });
+  $$('.zone', root).forEach(z => { z.addEventListener('dragover', e => { e.preventDefault(); z.classList.add('over'); }); z.addEventListener('dragleave', () => z.classList.remove('over'));
+    z.addEventListener('drop', e => { e.preventDefault(); z.classList.remove('over'); if (checked) return; const i = e.dataTransfer.getData('text/plain'); if (i === '') return; pos[i] = z.dataset.z; store.set(key, pos); draw(); }); });
+  let skor = 0;
+  $('[data-cek]', root).onclick = () => { checked = true; skor = KARTU.filter((k, i) => k[4] || pos[i] === k[2]).length; draw();
+    $('[data-info]', root).innerHTML = `<b>Skor kelompok: ${skor}/16.</b> Kartu bertanda “Diskusikan” dihitung benar di kolom mana pun.`; $('[data-after]', root).style.display = ''; kb.style.display = ''; };
+  draw(); bindDraft(root, ctx.key);
+  const kb = kirimBar(root); kb.style.display = 'none';
+  $('[data-kirim]', kb).onclick = () => {
+    if (!val(root, 'kesimpulan')) return alertBox('Belum lengkap', 'Tulis kesimpulan kelompok tentang jejak pasif dulu.');
+    const salah = KARTU.filter((k, i) => !k[4] && pos[i] !== k[2]).map(k => k[0]);
+    doKirim(root, ctx, { skor, maks: 16, ringkasan: `Sortir ${skor}/16${salah.length ? ' · salah: ' + salah.join(', ') : ''} · Kesimpulan: ${val(root, 'kesimpulan')}`,
+      jawaban: { posisi: pos, ragu: val(root, 'ragu'), kesimpulan: val(root, 'kesimpulan'), anggota: val(root, 'anggota'), kelompok: val(root, 'kelompok_isi') || profil().kelompok } });
+  };
+};
+
+R.detektif = (root, ctx) => {
+  const key = 'draft.' + ctx.key + '.posts';
+  let data = store.get(key, POSTS.map(() => ({ petunjuk: '', info: '', pembaca: [], risiko: '' }))); let sel = 0; let terkirim = false;
+  root.innerHTML = `<div class="inst"><b>Tugas kelompok:</b> @raka.ix adalah akun <b>fiktif</b>. Tekan setiap unggahan, lalu isi: petunjuk yang terlihat, informasi yang bisa ditebak, dan siapa yang bisa memanfaatkannya. Minimal 4 dari 6 unggahan, lalu gabungkan semuanya.</div>
+    <div class="grid g2" style="align-items:start"><div class="phone"><div class="phead"><div class="ava">&#x1F466;</div><div><b>@raka.ix</b> · <span class="muted">akun publik · 812 pengikut</span><div style="font-size:14px">Raka P. · Kelas IX · SMP Harapan Bangsa, Jakarta · futsal | gim | kucing</div></div></div>
+      <div class="posts">${POSTS.map((p, i) => `<button class="post" data-p="${i}"><div class="img" style="background:${p.c}">${p.e}<span class="ck">&#10003;</span></div><div class="cap">${esc(p.cap)}</div></button>`).join('')}</div></div>
+    <div class="card" data-ed></div></div>
+    <label class="f">Gabungkan keenam unggahan: apa saja yang bisa diketahui orang asing tentang Raka?</label><textarea name="gabungan"></textarea>
+    ${anggotaField()}<label class="f">Nama anggota kelompok</label><input type="text" name="anggota">
+    <div data-kunci></div>`;
+  const filled = i => data[i].petunjuk.trim() && data[i].info.trim();
+  const drawTiles = () => $$('.post', root).forEach(b => { const i = +b.dataset.p; b.classList.toggle('sel', i === sel); b.classList.toggle('filled', !!filled(i)); });
+  const drawEd = () => { const p = POSTS[sel], d = data[sel];
+    $('[data-ed]', root).innerHTML = `<div class="muted" style="font-size:13px">Unggahan ${sel + 1} dari 6</div><h3 style="margin-top:4px">${esc(p.isi)}</h3><div class="muted">“${esc(p.cap)}”</div>
+      <label class="f">Petunjuk yang terlihat</label><textarea data-k="petunjuk">${esc(d.petunjuk)}</textarea>
+      <label class="f">Informasi yang bisa ditebak</label><textarea data-k="info">${esc(d.info)}</textarea>
+      <label class="f">Siapa yang bisa memanfaatkannya?</label>${PEMBACA.map((b, j) => `<label class="chk"><input type="checkbox" data-pb="${j}" ${d.pembaca.includes(j) ? 'checked' : ''}>${esc(b)}</label>`).join('')}
+      <label class="f">Risikonya</label><input type="text" data-k="risiko" value="${esc(d.risiko)}">
+      <div class="row" style="margin-top:12px">${sel > 0 ? '<button class="btn sm ghost" data-nav="-1">← Sebelumnya</button>' : ''}${sel < 5 ? '<button class="btn sm" data-nav="1">Berikutnya →</button>' : ''}</div>`; };
+  root.addEventListener('click', e => { const t = e.target.closest('[data-p],[data-nav]'); if (!t) return; sel = t.dataset.p !== undefined ? +t.dataset.p : sel + +t.dataset.nav; drawTiles(); drawEd(); });
+  root.addEventListener('input', e => { const t = e.target; if (t.dataset.k) data[sel][t.dataset.k] = t.value; if (t.dataset.pb !== undefined) { const j = +t.dataset.pb; data[sel].pembaca = t.checked ? [...new Set([...data[sel].pembaca, j])] : data[sel].pembaca.filter(x => x !== j); } store.set(key, data); drawTiles(); });
+  drawTiles(); drawEd(); bindDraft(root, ctx.key);
+  const kb = kirimBar(root);
+  $('[data-kirim]', kb).onclick = () => {
+    const n = data.filter((_, i) => filled(i)).length;
+    if (n < 4 || !val(root, 'gabungan')) return alertBox('Belum lengkap', `Baru ${n} unggahan terisi. Isi minimal 4 unggahan dan bagian "gabungkan".`);
+    doKirim(root, ctx, { skor: n, maks: 6, ringkasan: `${n}/6 unggahan dianalisis · Gabungan: ${val(root, 'gabungan')}`, jawaban: { unggahan: data.map((d, i) => ({ ...d, pembaca: d.pembaca.map(j => PEMBACA[j]) })), gabungan: val(root, 'gabungan'), anggota: val(root, 'anggota'), kelompok: val(root, 'kelompok_isi') || profil().kelompok } }, () => {
+      $('[data-kunci]', root).innerHTML = `<h2>Pembahasan</h2><div class="tw"><table><thead><tr><th>#</th><th>Unggahan</th><th>Yang bisa terungkap</th></tr></thead><tbody>${POSTS.map((p, i) => `<tr><td>${i + 1}</td><td>${esc(p.cap)}</td><td>${esc(p.kunci)}</td></tr>`).join('')}</tbody></table></div>
+        <div class="note"><b>Intinya:</b> tiap unggahan tampak sepele, tetapi jika disatukan, orang asing tahu di mana Raka sekolah, kapan ia ada di kolam renang, usianya, kira-kira alamatnya, kapan rumahnya kosong, dan tebakan jawaban pertanyaan keamanan akunnya.</div>`; });
+  };
+};
+
+R.algoritma = (root, ctx) => {
+  root.innerHTML = `<div class="inst"><b>Kalian adalah sistem rekomendasi</b> sebuah aplikasi video. Satu-satunya data yang kalian punya adalah <b>jejak pasif</b> Raka di bawah ini.</div>
+    <div class="tw"><table><thead><tr><th>Waktu</th><th>Judul video</th><th>Lama ditonton</th></tr></thead><tbody>${LOG.map(r => `<tr>${r.map(c => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+    <h3>1. Pilih tepat 3 video untuk beranda Raka Jumat malam</h3><div class="choice">${KANDIDAT.map((k, i) => `<label><input type="checkbox" name="v" value="${i}">${esc(k[0])}</label>`).join('')}</div><div class="muted" data-cnt style="margin-top:6px">0/3 dipilih</div>
+    <h3>2. Data mana yang paling kalian percaya untuk menebak minat Raka?</h3><div class="choice">${[['judul', 'Judul video'], ['lama', 'Lama ditonton'], ['jam', 'Jam menonton']].map(o => `<label><input type="radio" name="data" value="${o[0]}">${o[1]}</label>`).join('')}</div>
+    <label class="f">Alasannya</label><textarea name="alasan"></textarea>
+    <label class="f">3. Apa yang bisa membuat tebakan kalian salah?</label><textarea name="salah" placeholder="contoh: HP-nya dipakai adiknya…"></textarea>
+    ${anggotaField()}<div data-fb></div>`;
+  bindDraft(root, ctx.key);
+  const cnt = () => { const c = $$('[name=v]:checked', root); $('[data-cnt]', root).textContent = `${c.length}/3 dipilih`; $$('[name=v]', root).forEach(x => x.disabled = !x.checked && c.length >= 3); };
+  root.addEventListener('change', cnt); cnt();
+  const kb = kirimBar(root);
+  $('[data-kirim]', kb).onclick = () => {
+    const v = $$('[name=v]:checked', root).map(x => +x.value); const d = ($('[name=data]:checked', root) || {}).value;
+    if (v.length !== 3 || !d || !val(root, 'salah')) return alertBox('Belum lengkap', 'Pilih 3 video, satu jenis data, dan isi pertanyaan nomor 3.');
+    const skor = v.filter(i => KANDIDAT[i][1]).length + (d === 'lama' ? 1 : 0);
+    doKirim(root, ctx, { skor, maks: 4, ringkasan: `Pilihan: ${v.map(i => KANDIDAT[i][0]).join('; ')} · Data: ${d} · Bisa salah: ${val(root, 'salah')}`, jawaban: { video: v.map(i => KANDIDAT[i][0]), data: d, alasan: val(root, 'alasan'), salah: val(root, 'salah'), kelompok: val(root, 'kelompok_isi') || profil().kelompok } }, () => {
+      $('[data-fb]', root).innerHTML = `<div class="note"><b>Pembahasan:</b> Raka menonton habis video futsal (trik, sepatu, liga, kiper) dan melewati video lain. Sistem rekomendasi paling percaya pada <b>lama ditonton</b>, karena menonton sampai habis menunjukkan minat nyata, sedangkan video yang dilewati menjadi sinyal "tidak suka". Tebakan bisa salah kalau perangkat dipakai bersama atau video ditonton untuk tugas. <b>KA belajar pola dari jejak pasif kita.</b></div>`; });
+  };
+};
+
+R.audit = (root, ctx) => {
+  let ans = AUDIT.map(() => null); let jalur = 'A';
+  root.innerHTML = `<div class="note coral"><b>Audit ini privat.</b> Jawaban tiap butir <u>tidak dikirim dan tidak disimpan</u>. Yang dikirim ke guru hanya skor, zona, dan rencana tindakanmu. Jangan memotret atau mengintip layar teman. Kalau menemukan hal yang mengganggu tentang dirimu, laporkan ke guru atau guru BK.</div>
+    <div class="inst"><b>Langkah 1.</b> Buka tab baru, ketik namamu dalam tanda kutip di mesin pencari, contoh: <code>"Raka Pratama" Jakarta</code>.<br><b>Langkah 2.</b> Pilih jalurmu, lalu periksa akunmu untuk setiap butir.</div>
+    <div class="choice" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+      <label><input type="radio" name="jalur" value="A" data-nodraft checked><span><b>Jalur A</b><br><span class="muted" style="font-size:14px">Aku punya media sosial</span></span></label>
+      <label><input type="radio" name="jalur" value="B" data-nodraft><span><b>Jalur B</b><br><span class="muted" style="font-size:14px">Aku belum punya media sosial</span></span></label>
+      <label><input type="radio" name="jalur" value="E" data-nodraft><span><b>Eksplorasi</b><br><span class="muted" style="font-size:14px">Jalur A + cek riwayat lokasi &amp; aplikasi pihak ketiga</span></span></label></div>
+    <div class="grid g2" style="align-items:start;margin-top:14px"><div class="card" data-list></div>
+    <div style="position:sticky;top:76px"><div class="zonebox z-0" data-zone><div class="stat" data-skor>0/10</div><div data-zt>Isi semua butir</div></div>
+      <label class="f">Tindakanku HARI INI</label><select data-nodraft name="t1"></select><input type="text" data-nodraft name="t1x" placeholder="atau tulis sendiri…" style="margin-top:6px">
+      <label class="f">Tindakanku MINGGU INI</label><select data-nodraft name="t2"></select><input type="text" data-nodraft name="t2x" placeholder="atau tulis sendiri…" style="margin-top:6px">
+      <div class="note" data-preview style="font-size:14px"></div></div></div>`;
+  const drawList = () => { $('[data-list]', root).innerHTML = AUDIT.map((a, i) => `<div class="aud"><div class="tx"><b>${i + 1}.</b> ${esc(a[0])}${jalur === 'B' && a[1] ? `<div class="alt">${esc(a[1])}</div>` : ''}</div>
+      <div class="tog"><button data-a="${i}" data-v="1" class="y ${ans[i] === 1 ? 'on' : ''}">Ya</button><button data-a="${i}" data-v="0" class="n ${ans[i] === 0 ? 'on' : ''}">Belum</button></div></div>`).join('')
+      + (jalur === 'E' ? '<div class="note amber" style="margin-bottom:0"><b>Eksplorasi:</b> buka pengaturan akun Google → Data &amp; privasi → periksa Riwayat Lokasi/Linimasa dan daftar aplikasi pihak ketiga yang terhubung. Catat temuanmu di rencana tindakan.</div>' : ''); };
+  const update = () => {
+    const isi = ans.filter(a => a !== null).length; const skor = ans.filter(a => a === 1).length;
+    const z = isi < 10 ? ['z-0', 'Isi semua butir'] : skor >= 8 ? ['z-h', 'Zona HIJAU · jejakmu terjaga, pertahankan!'] : skor >= 5 ? ['z-k', 'Zona KUNING · ada celah, perbaiki minggu ini'] : ['z-m', 'Zona MERAH · perlu tindakan hari ini'];
+    $('[data-zone]', root).className = 'zonebox ' + z[0]; $('[data-skor]', root).textContent = `${skor}/10`; $('[data-zt]', root).textContent = z[1];
+    const sug = AUDIT.map((a, i) => ans[i] === 0 ? a[2] : null).filter(Boolean); const opts = ['', ...(sug.length ? sug : AUDIT.map(a => a[2]))];
+    ['t1', 't2'].forEach(n => { const s = $(`[name=${n}]`, root); const cur = s.value; s.innerHTML = opts.map(o => `<option value="${esc(o)}">${o ? esc(o) : 'Pilih tindakan…'}</option>`).join(''); if (opts.includes(cur)) s.value = cur; });
+    preview();
+    return { isi, skor, zona: z[1].split(' · ')[0].replace('Zona ', '') };
+  };
+  const t = n => val(root, n + 'x') || val(root, n);
+  const preview = () => { const skor = ans.filter(a => a === 1).length; $('[data-preview]', root).innerHTML = `<b>Yang akan dikirim ke guru:</b><br>Skor ${skor}/10 · Jalur ${jalur}<br>Hari ini: ${esc(t('t1') || '–')}<br>Minggu ini: ${esc(t('t2') || '–')}`; };
+  root.addEventListener('click', e => { const b = e.target.closest('[data-a]'); if (!b) return; ans[+b.dataset.a] = +b.dataset.v; drawList(); update(); });
+  root.addEventListener('change', e => { if (e.target.name === 'jalur') { jalur = e.target.value; drawList(); } preview(); });
+  root.addEventListener('input', preview);
+  drawList(); update();
+  const kb = kirimBar(root, 'Kirim skor & rencana');
+  $('[data-kirim]', kb).onclick = () => { const r = update(); if (r.isi < 10) return alertBox('Belum lengkap', 'Isi Ya/Belum untuk semua 10 butir.'); if (!t('t1') || !t('t2')) return alertBox('Belum lengkap', 'Pilih atau tulis tindakan hari ini dan minggu ini.');
+    doKirim(root, ctx, { skor: r.skor, maks: 10, ringkasan: `Zona ${r.zona} (${r.skor}/10) · Jalur ${jalur} · Hari ini: ${t('t1')} · Minggu ini: ${t('t2')}`, jawaban: { skor: r.skor, zona: r.zona, jalur, hariIni: t('t1'), mingguIni: t('t2') } }); };
+};
+
+R.posttest = (root, ctx) => {
+  const Q = ['<b>Nadia</b> hari ini tidak mengunggah apa pun. Ia mencari "sepatu futsal murah", membuka peta menuju lapangan, dan menonton tiga video futsal sampai habis. Analisis jejak apa saja yang ia tinggalkan beserta jenisnya.',
+    '<b>Raka</b> mengunggah tiga hal pada minggu yang berbeda: foto berseragam di depan gerbang sekolah, story "les renang tiap Kamis jam 4", dan foto kucing "Mochi, kesayanganku sejak SD". Analisis informasi yang bisa disimpulkan jika ketiganya digabung, dan siapa yang bisa memanfaatkannya.',
+    'Hasil audit <b>Dimas</b>: akun publik, lokasi otomatis aktif di foto, bio memuat nama sekolah dan kelas, dan ia tidak pernah memeriksa aplikasi yang terhubung. Evaluasi tingkat risikonya dan tentukan dua tindakan prioritas beserta alasannya.'];
+  root.innerHTML = `<div class="inst">Kerjakan sendiri. Jawab dengan kalimatmu sendiri dan sertakan alasan. Guru akan menilai skor 0–4 untuk tiap soal.</div>${Q.map((q, i) => `<div class="q"><b>${i + 1}.</b> ${q}<textarea name="j${i}" style="margin-top:8px;min-height:110px"></textarea></div>`).join('')}`;
+  bindDraft(root, ctx.key);
+  const kb = kirimBar(root);
+  $('[data-kirim]', kb).onclick = () => { const j = [0, 1, 2].map(i => val(root, 'j' + i)); if (j.some(x => !x)) return alertBox('Belum lengkap', 'Jawab ketiga soal dulu.');
+    doKirim(root, ctx, { skor: '', maks: 12, ringkasan: j.map((x, i) => `${i + 1}) ${x}`).join(' | '), jawaban: { j } }); };
+};
+
+R.tiket = (root, ctx) => {
+  root.innerHTML = `<div class="inst">Tiket keluar membantu guru tahu apa yang sudah kamu pahami dan apa yang masih membingungkan.</div>
+    <label class="f">3 hal baru yang kupelajari hari ini</label>${[1, 2, 3].map(i => `<input type="text" name="h${i}" style="margin-bottom:6px">`).join('')}
+    <label class="f">2 tindakan yang akan kulakukan</label>${[1, 2].map(i => `<input type="text" name="t${i}" style="margin-bottom:6px">`).join('')}
+    <label class="f">1 pertanyaan yang masih kupunya</label><input type="text" name="q1">
+    <label class="f">Hari ini aku merasa…</label><div class="choice" style="grid-template-columns:repeat(4,1fr)">${['1 · Bingung', '2 · Agak paham', '3 · Paham', '4 · Siap mengajari teman'].map((o, i) => `<label><input type="radio" name="rasa" value="${i + 1}">${o}</label>`).join('')}</div>`;
+  bindDraft(root, ctx.key);
+  const kb = kirimBar(root);
+  $('[data-kirim]', kb).onclick = () => { const h = [1, 2, 3].map(i => val(root, 'h' + i)), t = [1, 2].map(i => val(root, 't' + i)), q = val(root, 'q1'), r = ($('[name=rasa]:checked', root) || {}).value;
+    if (h.some(x => !x) || t.some(x => !x) || !q || !r) return alertBox('Belum lengkap', 'Isi semua kolom tiket keluar.');
+    doKirim(root, ctx, { skor: +r, maks: 4, ringkasan: `Pemahaman ${r}/4 · Baru: ${h.join('; ')} · Tindakan: ${t.join('; ')} · Tanya: ${q}`, jawaban: { baru: h, tindakan: t, tanya: q, rasa: +r } }); };
+};
+
+R.wawancara = (root, ctx) => {
+  const Q = ['Pernahkah Anda menyesal setelah mengunggah atau mengirim sesuatu di internet? Apa yang terjadi?', 'Apa yang Anda lakukan sekarang sebelum mengunggah sesuatu?', 'Menurut Anda, unggahan seperti apa yang membuat seseorang dinilai baik oleh orang lain?'];
+  root.innerHTML = `<div class="inst">Wawancarai <b>satu anggota keluarga</b> di rumah. Tidak perlu menulis nama mereka. Jawaban ini akan dibaca bersama di Pertemuan 2 (tanpa namamu).</div>
+    <label class="f">Yang kuwawancarai</label><select name="siapa"><option value="">Pilih…</option>${['Ayah', 'Ibu', 'Kakak', 'Adik', 'Kakek/Nenek', 'Paman/Bibi', 'Lainnya'].map(o => `<option>${o}</option>`).join('')}</select>
+    ${Q.map((q, i) => `<div class="q"><b>${i + 1}.</b> ${esc(q)}<textarea name="w${i}" style="margin-top:8px"></textarea></div>`).join('')}`;
+  bindDraft(root, ctx.key);
+  const kb = kirimBar(root);
+  $('[data-kirim]', kb).onclick = () => { const w = [0, 1, 2].map(i => val(root, 'w' + i)); if (!val(root, 'siapa') || w.some(x => !x)) return alertBox('Belum lengkap', 'Isi semua pertanyaan wawancara.');
+    doKirim(root, ctx, { skor: '', maks: '', ringkasan: `(${val(root, 'siapa')}) ${w.map((x, i) => `${i + 1}) ${x}`).join(' | ')}`, jawaban: { siapa: val(root, 'siapa'), w } }); };
+};
+
+/* ===================== MODE GURU ===================== */
+const KUNCI_GURU_INFO = {
+  'P1-pretest': 'Kunci: 1 S, 2 S, 3 B, 4 B. Skor 0–2 → kartu bantuan & audit terpandu; 3–4 → reguler; 4 + uraian tepat → Tantangan Eksplorasi/tutor sebaya.',
+  'P1-sortir': 'Aktif: 06.40, 07.30, 10.10, 12.20, 14.30, 15.00, 18.45, 20.00. Pasif: 06.15, 07.05, 09.50, 12.00, 13.15, 16.10, 19.30, 21.30. 15.00 dan 16.10 kartu diskusi (dihitung benar di kolom mana pun). Tercapai KKTP 1: ≥ 13/16.',
+  'P1-detektif': 'Tercapai KKTP 2: minimal 4/6 unggahan dihubungkan dengan informasi + risiko, dan ada gambaran gabungan.',
+  'P1-algoritma': 'Skor = jumlah video futsal yang dipilih (maks 3) + 1 bila memilih "lama ditonton".',
+  'P1-audit': 'Tercapai KKTP 3: zona ditentukan dan dua tindakan spesifik sesuai temuan. Detail butir tidak dikirim (privasi).',
+  'P1-posttest': 'Nilai manual 0–4 per butir di kolom Skor Google Sheet. (1) riwayat pencarian, lokasi, lama tontonan = pasif; (2) sekolah + jadwal → keberadaan, nama hewan → pertanyaan keamanan, pihak: orang asing/penipu; (3) zona merah, prioritas geotag & privat/hapus info sekolah. Nilai = jumlah ÷ 12 × 100.',
+};
+function viewGuru(app) {
+  const g = { url: scriptURL(), kunci: store.get('guru.kunci', ''), kelas: store.get('guru.kelas', ''), p: store.get('guru.p', '1'), k: store.get('guru.k', 'sortir') };
+  const kegOpts = p => PERTEMUAN[p - 1].kegiatan.filter(k => k.r).map(k => `<option value="${k.id}" ${k.id === g.k ? 'selected' : ''}>${esc(k.judul)}</option>`).join('');
+  app.innerHTML = `<div class="crumb"><a href="#">Beranda</a> › Mode guru</div><h1>Mode Guru</h1>
+    <div class="grid g2" style="align-items:start"><form class="card" id="fg"><h3 style="margin-top:0">Koneksi Google Sheet</h3>
+      <label class="f">URL Web App Apps Script</label><input type="url" id="gUrl" value="${esc(g.url)}" placeholder="https://script.google.com/macros/s/…/exec">
+      <label class="f">Kunci guru</label><input type="password" id="gKey" value="${esc(g.kunci)}" placeholder="sesuai KUNCI_GURU di Code.gs">
+      <p class="muted" style="font-size:13px">Tersimpan hanya di peramban ini. Murid tetap memakai URL yang ditulis di CONFIG pada file index.html.</p>
+      <div class="grid g2"><div><label class="f">Kelas</label><select id="gKelas"><option value="">Semua</option>${KELAS.map(k => `<option ${k === g.kelas ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
+      <div><label class="f">Pertemuan</label><select id="gP">${PERTEMUAN.map(p => `<option value="${p.n}" ${String(p.n) === String(g.p) ? 'selected' : ''}>P${p.n} · ${esc(p.judul)}</option>`).join('')}</select></div></div>
+      <label class="f">Kegiatan</label><select id="gK">${kegOpts(g.p)}</select>
+      <div class="row" style="margin-top:14px"><button class="btn" type="submit">Tampilkan rekap</button><label class="chk" style="margin:0"><input type="checkbox" id="gPid" ${store.get('guru.pid', false) ? 'checked' : ''}>Tampilan besar (PID)</label></div></form>
+    <div class="card"><h3 style="margin-top:0">Kunci &amp; kriteria</h3><div id="gInfo" class="muted"></div><h3>Keadaan web</h3><p style="margin:0">${g.url ? 'Terhubung ke Apps Script.' : '<b>Mode coba</b>: belum ada URL. Rekap di bawah hanya menampilkan kiriman dari perangkat ini.'}</p></div></div>
+    <div id="gOut" style="margin-top:18px"></div>`;
+  const info = () => $('#gInfo').textContent = KUNCI_GURU_INFO[`P${$('#gP').value}-${$('#gK').value}`] || 'Belum ada kunci untuk kegiatan ini.';
+  $('#gP').onchange = () => { $('#gK').innerHTML = kegOpts($('#gP').value); info(); }; $('#gK').onchange = info; info();
+  $('#gPid').onchange = e => { store.set('guru.pid', e.target.checked); document.documentElement.classList.toggle('pid', e.target.checked); };
+  $('#fg').onsubmit = async e => { e.preventDefault();
+    const url = $('#gUrl').value.trim(), kunci = $('#gKey').value, kelas = $('#gKelas').value, p = $('#gP').value, k = $('#gK').value;
+    store.set('guru.url', url); store.set('guru.kunci', kunci); store.set('guru.kelas', kelas); store.set('guru.p', p); store.set('guru.k', k);
+    const out = $('#gOut'); out.innerHTML = '<p class="muted">Memuat…</p>';
+    let rows;
+    if (url) { try { const q = new URLSearchParams({ aksi: 'rekap', kunci, kelas, pertemuan: 'P' + p, kegiatan: k }); const res = await fetch(url + '?' + q); const j = await res.json(); if (!j.ok) throw new Error(j.pesan); rows = j.data; }
+      catch (err) { out.innerHTML = `<div class="note coral"><b>Gagal memuat:</b> ${esc(err.message || 'periksa URL, kunci guru, dan koneksi internet')}.</div>`; return; } }
+    else rows = store.get('riwayat', []).filter(r => r.pertemuan === 'P' + p && r.kegiatan === k && (!kelas || r.kelas === kelas));
+    const last = {}; rows.forEach(r => { last[`${r.kelas}|${r.absen}`] = r; }); rows = Object.values(last).sort((a, b) => (a.kelas + String(a.absen).padStart(2, '0')).localeCompare(b.kelas + String(b.absen).padStart(2, '0')));
+    const sk = rows.map(r => parseFloat(r.skor)).filter(x => !isNaN(x)); const maks = rows.find(r => r.maks)?.maks || '';
+    const zona = k === 'audit' ? ['HIJAU', 'KUNING', 'MERAH'].map(z => [z, rows.filter(r => String(r.ringkasan).includes('Zona ' + z)).length]) : null;
+    out.innerHTML = `<div class="grid g3"><div class="card"><div class="stat">${rows.length}</div><div class="muted">murid/kelompok mengirim (kiriman terbaru)</div></div>
+      <div class="card"><div class="stat">${sk.length ? (sk.reduce((a, b) => a + b, 0) / sk.length).toFixed(1) : '–'}${maks ? `<span style="font-size:20px">/${esc(maks)}</span>` : ''}</div><div class="muted">rerata skor</div></div>
+      ${zona ? `<div class="card">${zona.map(([z, c]) => `<div class="row" style="justify-content:space-between"><b>${z}</b><span class="stat" style="font-size:26px">${c}</span></div>`).join('')}</div>` : ''}</div>
+      <h2>Rincian</h2><div class="tw"><table><thead><tr><th>Kelas</th><th>Absen</th><th>Nama</th><th>Klp</th><th>Skor</th><th>Ringkasan jawaban</th><th>Waktu</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${esc(r.kelas)}</td><td>${esc(r.absen)}</td><td>${esc(r.nama)}</td><td>${esc(r.kelompok)}</td><td>${esc(r.skor)}${r.maks ? '/' + esc(r.maks) : ''}</td><td>${esc(r.ringkasan)}</td><td style="white-space:nowrap">${esc(new Date(r.waktu).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }))}</td></tr>`).join('') || '<tr><td colspan="7" class="muted">Belum ada kiriman.</td></tr>'}</tbody></table></div>`;
+  };
+}
+
+/* ===================== MULAI ===================== */
+render(); flushQueue(false);
+</script>
+</body>
+</html>
