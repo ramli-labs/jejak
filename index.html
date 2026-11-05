@@ -157,6 +157,13 @@ const store = {
   clearPrefix(p) { Object.keys(mem).forEach(k => k.startsWith(p) && delete mem[k]); try { Object.keys(localStorage).forEach(k => k.startsWith('jejak.' + p) && localStorage.removeItem(k)); } catch (e) {} },
 };
 const scriptURL = () => (store.get('guru.url', '') || CONFIG.APPS_SCRIPT_URL || '').trim();
+const rosterOf = kelas => (store.get('roster.' + kelas, null) || {}).data || [];
+async function ambilRoster(kelas, kode) {
+  const url = scriptURL(); if (!url) throw new Error('Web belum tersambung ke Google Sheet');
+  const res = await fetch(url + '?' + new URLSearchParams({ aksi: 'murid', kelas, kode }));
+  const j = await res.json(); if (!j.ok) throw new Error(j.pesan || 'gagal');
+  store.set('roster.' + kelas, { kode, data: j.data }); return j.data;
+}
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -310,7 +317,9 @@ async function postPayload(p) {
 async function kirim(pn, kg, data) {
   const u = profil();
   const payload = { waktu: new Date().toISOString(), nama: u.nama, kelas: u.kelas, absen: u.absen, kelompok: u.kelompok || '', pertemuan: 'P' + pn, kegiatan: kg.id, judul: kg.judul,
-    skor: data.skor ?? '', maks: data.maks ?? '', ringkasan: data.ringkasan || '', jawaban: JSON.stringify(data.jawaban || {}) };
+    skor: data.skor ?? '', maks: data.maks ?? '', ringkasan: data.ringkasan || '', jawaban: JSON.stringify(data.jawaban || {}), kode: u.kode || '' };
+  if (data.anggota && data.anggota.length) payload.anggota = data.anggota;
+  if (data.kelompok) payload.kelompok = data.kelompok;
   const riwayat = store.get('riwayat', []); riwayat.push(payload); store.set('riwayat', riwayat.slice(-200));
   let hasil;
   try { hasil = await postPayload(payload); } catch (e) { const q = store.get('antrean', []); q.push(payload); store.set('antrean', q); hasil = 'antre'; }
@@ -357,14 +366,34 @@ function viewProfil(app) {
   app.innerHTML = `<div class="grid g2" style="align-items:start">
     <div class="hero"><div class="tag">Modul 3 · Informatika &amp; KKA</div><h1 style="margin-top:8px">Selamat datang di JEJAK</h1>
     <p>Di sini kamu akan mengerjakan semua kegiatan Modul 3: mengenali jejak digital, melawan perundungan digital, sampai membuat video kampanye.</p></div>
-    <form class="card" id="fProfil"><h2 style="margin-top:0">Isi identitasmu</h2>
-      <label class="f" for="nama">Nama lengkap</label><input type="text" id="nama" required autocomplete="off">
-      <div class="grid g2"><div><label class="f" for="kelas">Kelas</label><select id="kelas" required><option value="">Pilih…</option>${KELAS.map(k => `<option>${k}</option>`).join('')}</select></div>
-      <div><label class="f" for="absen">No. absen</label><input type="number" id="absen" min="1" max="40" required></div></div>
+    <form class="card" id="fProfil" novalidate><h2 style="margin-top:0">Masuk</h2>
+      <div class="grid g2"><div><label class="f" for="kelas">Kelas</label><select id="kelas"><option value="">Pilih…</option>${KELAS.map(k => `<option>${k}</option>`).join('')}</select></div>
+      <div><label class="f" for="kode">Kode kelas</label><input type="text" id="kode" autocomplete="off" maxlength="6" style="text-transform:uppercase;letter-spacing:3px;font-weight:700" placeholder="dari guru"></div></div>
+      <div class="row" style="margin-top:10px"><button class="btn ghost sm" type="button" id="bAmbil">Tampilkan daftar nama</button><span class="muted" id="pInfo" style="font-size:14px"></span></div>
+      <div id="pNama" style="display:none"><label class="f" for="murid">Pilih namamu</label><select id="murid"></select></div>
+      <div id="pManual" style="display:none"><label class="f" for="nama">Nama lengkap</label><input type="text" id="nama" autocomplete="off">
+        <label class="f" for="absen">No. absen</label><input type="number" id="absen" min="1" max="45"></div>
       <label class="f" for="kelompok">Nomor kelompok (dari guru)</label><select id="kelompok"><option value="">Belum ada</option>${[1,2,3,4,5,6,7,8].map(k => `<option>${k}</option>`).join('')}</select>
       <p class="muted" style="font-size:14px">Komputer lab dipakai bergantian. Saat selesai, tekan namamu di pojok kanan atas lalu pilih <b>Ganti murid</b>.</p>
-      <button class="btn" type="submit">Mulai</button></form></div>`;
-  $('#fProfil').onsubmit = e => { e.preventDefault(); store.set('profil', { nama: $('#nama').value.trim(), kelas: $('#kelas').value, absen: $('#absen').value, kelompok: $('#kelompok').value }); render(); };
+      <div class="row"><button class="btn" type="submit">Mulai</button><a href="#" id="aManual" style="font-size:14px">Namaku tidak ada / tidak ada internet</a></div></form></div>`;
+  let mode = 'daftar';
+  const isiNama = data => { $('#murid').innerHTML = '<option value="">Pilih…</option>' + data.map(m => `<option value="${esc(m.absen)}">${esc(m.absen)}. ${esc(m.nama)}</option>`).join(''); $('#pNama').style.display = ''; $('#pInfo').textContent = `${data.length} murid`; };
+  const coba = async () => {
+    const kelas = $('#kelas').value, kode = $('#kode').value.trim().toUpperCase();
+    if (!kelas || !kode) return alertBox('Belum lengkap', 'Pilih kelas dan ketik kode kelas dari guru.');
+    $('#pInfo').textContent = 'Memuat…';
+    try { isiNama(await ambilRoster(kelas, kode)); }
+    catch (err) { const c = store.get('roster.' + kelas, null); if (c && c.kode === kode && c.data.length) { isiNama(c.data); $('#pInfo').textContent = 'Daftar tersimpan (offline)'; } else { $('#pInfo').textContent = ''; alertBox('Gagal memuat', (err.message || 'Periksa internet') + '. Cek kembali kode kelas.'); } }
+  };
+  $('#bAmbil').onclick = coba;
+  $('#aManual').onclick = e => { e.preventDefault(); mode = 'manual'; $('#pManual').style.display = ''; $('#pNama').style.display = 'none'; };
+  $('#fProfil').onsubmit = e => { e.preventDefault();
+    const kelas = $('#kelas').value, kode = $('#kode').value.trim().toUpperCase(), kelompok = $('#kelompok').value;
+    if (!kelas) return alertBox('Belum lengkap', 'Pilih kelasmu.');
+    if (mode === 'daftar') { const ab = $('#murid').value; if (!ab) return alertBox('Belum lengkap', 'Tampilkan daftar nama lalu pilih namamu.');
+      const m = rosterOf(kelas).find(x => x.absen === ab); store.set('profil', { nama: m.nama, kelas, absen: ab, kelompok, kode }); }
+    else { const nama = $('#nama').value.trim(), absen = $('#absen').value; if (!nama || !absen) return alertBox('Belum lengkap', 'Isi nama dan nomor absen.'); store.set('profil', { nama, kelas, absen, kelompok, kode, manual: true }); }
+    render(); };
 }
 
 function progres(p) { const ks = p.kegiatan.filter(k => k.r); const d = ks.filter(k => isDone(p.n, k.id)).length; return [d, ks.length]; }
@@ -398,6 +427,21 @@ function viewKegiatan(app, n, id) {
     <div class="row" style="justify-content:space-between;margin-top:26px"><a class="btn ghost" href="#p${n}">← Daftar kegiatan</a>${next ? `<a class="btn ghost" href="#p${n}-${next.id}">${esc(next.judul)} →</a>` : ''}</div>`;
   const root = $('#act');
   R[kg.r](root, { n, kg, key: `P${n}-${kg.id}` });
+  cekStatusKelompok(n, kg);
+}
+async function cekStatusKelompok(n, kg) {
+  const u = profil(); if (kg.jenis !== 'kelompok' || !scriptURL() || !u.kode) return;
+  try {
+    const q = new URLSearchParams({ aksi: 'status', kelas: u.kelas, kode: u.kode, absen: u.absen, pertemuan: 'P' + n, kegiatan: kg.id });
+    const j = await (await fetch(scriptURL() + '?' + q)).json();
+    if (!j.ok || !j.ada || location.hash !== `#p${n}-${kg.id}`) return;
+    if (j.oleh && j.oleh !== u.nama) {
+      markDone(n, kg.id, { skor: '', maks: '', waktu: j.waktu, oleh: j.oleh });
+      const box = document.createElement('div'); box.className = 'note';
+      box.innerHTML = `<b>Sudah dikirim oleh kelompokmu</b> (oleh ${esc(j.oleh)}, ${esc(new Date(j.waktu).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }))}). Kamu tidak perlu mengirim lagi. Kalau kelompok ingin memperbaiki jawaban, cukup satu orang yang mengirim ulang.`;
+      $('#act').prepend(box);
+    }
+  } catch (e) {}
 }
 
 /* tombol kirim standar */
@@ -408,7 +452,21 @@ async function doKirim(root, ctx, data, after) {
   const s = $('[data-status]', root); s.className = 'status ' + cls; s.textContent = msg; b.textContent = 'Kirim lagi'; b.disabled = false;
   if (after) after();
 }
-const anggotaField = (root) => profil().kelompok ? '' : `<label class="f">Nomor kelompok</label><select name="kelompok_isi">${[1,2,3,4,5,6,7,8].map(k => `<option>${k}</option>`).join('')}</select>`;
+function anggotaField() {
+  const u = profil(); const daftar = rosterOf(u.kelas).filter(m => m.absen !== String(u.absen));
+  const klp = u.kelompok ? '' : `<label class="f">Nomor kelompok</label><select name="kelompok_isi">${[1,2,3,4,5,6,7,8].map(k => `<option>${k}</option>`).join('')}</select>`;
+  if (!daftar.length) return klp + `<label class="f">Nama anggota kelompok</label><input type="text" name="anggota_teks" placeholder="contoh: Raka, Nadia, Dimas">`;
+  return klp + `<label class="f">Centang teman sekelompokmu <span class="muted" style="font-weight:400">(namamu otomatis ikut)</span></label>
+    <div class="card" style="max-height:260px;overflow:auto;padding:10px 14px">${daftar.map(m => `<label class="chk"><input type="checkbox" name="agt" value="${esc(m.absen)}" data-nodraft>${esc(m.absen)}. ${esc(m.nama)}</label>`).join('')}</div>`;
+}
+function ambilAnggota(root) {
+  const u = profil(); const daftar = rosterOf(u.kelas);
+  const absen = $$('input[name=agt]:checked', root).map(x => x.value);
+  const nama = absen.map(a => (daftar.find(m => m.absen === a) || {}).nama || a);
+  const kelompok = val(root, 'kelompok_isi') || u.kelompok || '';
+  return { anggota: absen, kelompok, namaAnggota: [u.nama, ...nama].join(', ') || val(root, 'anggota_teks') };
+}
+function cekAnggota(root) { if ($('input[name=agt]', root) && !$$('input[name=agt]:checked', root).length) { alertBox('Anggota belum dipilih', 'Centang nama teman sekelompokmu dulu, supaya mereka ikut tercatat.'); return false; } return true; }
 
 /* ===================== KEGIATAN ===================== */
 const R = {};
@@ -444,7 +502,7 @@ R.sortir = (root, ctx) => {
     <div data-after style="display:none"><h2>Setelah diperiksa</h2>
       <label class="f">Kartu yang paling membuat kelompok kalian ragu, dan mengapa?</label><textarea name="ragu"></textarea>
       <label class="f">Setelah melihat demonstrasi guru (halaman "Aktivitas Saya"): apa kesimpulan kalian tentang jejak pasif?</label><textarea name="kesimpulan"></textarea>
-      ${anggotaField()}<label class="f">Nama anggota kelompok</label><input type="text" name="anggota" placeholder="contoh: Raka, Nadia, Dimas, Sari"></div>`;
+      ${anggotaField()}</div>`;
   const draw = () => {
     ['', 'A', 'P'].forEach(z => {
       const list = $(`[data-list="${z}"]`, root); const items = KARTU.map((k, i) => [k, i]).filter(([k, i]) => (pos[i] || '') === z);
@@ -469,9 +527,10 @@ R.sortir = (root, ctx) => {
   const kb = kirimBar(root); kb.style.display = 'none';
   $('[data-kirim]', kb).onclick = () => {
     if (!val(root, 'kesimpulan')) return alertBox('Belum lengkap', 'Tulis kesimpulan kelompok tentang jejak pasif dulu.');
+    if (!cekAnggota(root)) return; const ag = ambilAnggota(root);
     const salah = KARTU.filter((k, i) => !k[4] && pos[i] !== k[2]).map(k => k[0]);
     doKirim(root, ctx, { skor, maks: 16, ringkasan: `Sortir ${skor}/16${salah.length ? ' · salah: ' + salah.join(', ') : ''} · Kesimpulan: ${val(root, 'kesimpulan')}`,
-      jawaban: { posisi: pos, ragu: val(root, 'ragu'), kesimpulan: val(root, 'kesimpulan'), anggota: val(root, 'anggota'), kelompok: val(root, 'kelompok_isi') || profil().kelompok } });
+      anggota: ag.anggota, kelompok: ag.kelompok, jawaban: { posisi: pos, ragu: val(root, 'ragu'), kesimpulan: val(root, 'kesimpulan'), anggota: ag.namaAnggota, kelompok: ag.kelompok } });
   };
 };
 
@@ -483,7 +542,7 @@ R.detektif = (root, ctx) => {
       <div class="posts">${POSTS.map((p, i) => `<button class="post" data-p="${i}"><div class="img" style="background:${p.c}">${p.e}<span class="ck">&#10003;</span></div><div class="cap">${esc(p.cap)}</div></button>`).join('')}</div></div>
     <div class="card" data-ed></div></div>
     <label class="f">Gabungkan keenam unggahan: apa saja yang bisa diketahui orang asing tentang Raka?</label><textarea name="gabungan"></textarea>
-    ${anggotaField()}<label class="f">Nama anggota kelompok</label><input type="text" name="anggota">
+    ${anggotaField()}
     <div data-kunci></div>`;
   const filled = i => data[i].petunjuk.trim() && data[i].info.trim();
   const drawTiles = () => $$('.post', root).forEach(b => { const i = +b.dataset.p; b.classList.toggle('sel', i === sel); b.classList.toggle('filled', !!filled(i)); });
@@ -501,7 +560,8 @@ R.detektif = (root, ctx) => {
   $('[data-kirim]', kb).onclick = () => {
     const n = data.filter((_, i) => filled(i)).length;
     if (n < 4 || !val(root, 'gabungan')) return alertBox('Belum lengkap', `Baru ${n} unggahan terisi. Isi minimal 4 unggahan dan bagian "gabungkan".`);
-    doKirim(root, ctx, { skor: n, maks: 6, ringkasan: `${n}/6 unggahan dianalisis · Gabungan: ${val(root, 'gabungan')}`, jawaban: { unggahan: data.map((d, i) => ({ ...d, pembaca: d.pembaca.map(j => PEMBACA[j]) })), gabungan: val(root, 'gabungan'), anggota: val(root, 'anggota'), kelompok: val(root, 'kelompok_isi') || profil().kelompok } }, () => {
+    if (!cekAnggota(root)) return; const ag = ambilAnggota(root);
+    doKirim(root, ctx, { skor: n, maks: 6, anggota: ag.anggota, kelompok: ag.kelompok, ringkasan: `${n}/6 unggahan dianalisis · Gabungan: ${val(root, 'gabungan')}`, jawaban: { unggahan: data.map((d, i) => ({ ...d, pembaca: d.pembaca.map(j => PEMBACA[j]) })), gabungan: val(root, 'gabungan'), anggota: ag.namaAnggota, kelompok: ag.kelompok } }, () => {
       $('[data-kunci]', root).innerHTML = `<h2>Pembahasan</h2><div class="tw"><table><thead><tr><th>#</th><th>Unggahan</th><th>Yang bisa terungkap</th></tr></thead><tbody>${POSTS.map((p, i) => `<tr><td>${i + 1}</td><td>${esc(p.cap)}</td><td>${esc(p.kunci)}</td></tr>`).join('')}</tbody></table></div>
         <div class="note"><b>Intinya:</b> tiap unggahan tampak sepele, tetapi jika disatukan, orang asing tahu di mana Raka sekolah, kapan ia ada di kolam renang, usianya, kira-kira alamatnya, kapan rumahnya kosong, dan tebakan jawaban pertanyaan keamanan akunnya.</div>`; });
   };
@@ -522,8 +582,9 @@ R.algoritma = (root, ctx) => {
   $('[data-kirim]', kb).onclick = () => {
     const v = $$('[name=v]:checked', root).map(x => +x.value); const d = ($('[name=data]:checked', root) || {}).value;
     if (v.length !== 3 || !d || !val(root, 'salah')) return alertBox('Belum lengkap', 'Pilih 3 video, satu jenis data, dan isi pertanyaan nomor 3.');
+    if (!cekAnggota(root)) return; const ag = ambilAnggota(root);
     const skor = v.filter(i => KANDIDAT[i][1]).length + (d === 'lama' ? 1 : 0);
-    doKirim(root, ctx, { skor, maks: 4, ringkasan: `Pilihan: ${v.map(i => KANDIDAT[i][0]).join('; ')} · Data: ${d} · Bisa salah: ${val(root, 'salah')}`, jawaban: { video: v.map(i => KANDIDAT[i][0]), data: d, alasan: val(root, 'alasan'), salah: val(root, 'salah'), kelompok: val(root, 'kelompok_isi') || profil().kelompok } }, () => {
+    doKirim(root, ctx, { skor, maks: 4, anggota: ag.anggota, kelompok: ag.kelompok, ringkasan: `Pilihan: ${v.map(i => KANDIDAT[i][0]).join('; ')} · Data: ${d} · Bisa salah: ${val(root, 'salah')}`, jawaban: { video: v.map(i => KANDIDAT[i][0]), data: d, alasan: val(root, 'alasan'), salah: val(root, 'salah'), anggota: ag.namaAnggota, kelompok: ag.kelompok } }, () => {
       $('[data-fb]', root).innerHTML = `<div class="note"><b>Pembahasan:</b> Raka menonton habis video futsal (trik, sepatu, liga, kiper) dan melewati video lain. Sistem rekomendasi paling percaya pada <b>lama ditonton</b>, karena menonton sampai habis menunjukkan minat nyata, sedangkan video yang dilewati menjadi sinyal "tidak suka". Tebakan bisa salah kalau perangkat dipakai bersama atau video ditonton untuk tugas. <b>KA belajar pola dari jejak pasif kita.</b></div>`; });
   };
 };
@@ -619,28 +680,39 @@ function viewGuru(app) {
       <div class="grid g2"><div><label class="f">Kelas</label><select id="gKelas"><option value="">Semua</option>${KELAS.map(k => `<option ${k === g.kelas ? 'selected' : ''}>${k}</option>`).join('')}</select></div>
       <div><label class="f">Pertemuan</label><select id="gP">${PERTEMUAN.map(p => `<option value="${p.n}" ${String(p.n) === String(g.p) ? 'selected' : ''}>P${p.n} · ${esc(p.judul)}</option>`).join('')}</select></div></div>
       <label class="f">Kegiatan</label><select id="gK">${kegOpts(g.p)}</select>
-      <div class="row" style="margin-top:14px"><button class="btn" type="submit">Tampilkan rekap</button><label class="chk" style="margin:0"><input type="checkbox" id="gPid" ${store.get('guru.pid', false) ? 'checked' : ''}>Tampilan besar (PID)</label></div></form>
+      <div class="row" style="margin-top:14px"><button class="btn" type="submit">Tampilkan rekap</button><button class="btn ghost" type="button" id="gKode">Kode kelas</button><label class="chk" style="margin:0"><input type="checkbox" id="gPid" ${store.get('guru.pid', false) ? 'checked' : ''}>Tampilan besar (PID)</label></div></form>
     <div class="card"><h3 style="margin-top:0">Kunci &amp; kriteria</h3><div id="gInfo" class="muted"></div><h3>Keadaan web</h3><p style="margin:0">${g.url ? 'Terhubung ke Apps Script.' : '<b>Mode coba</b>: belum ada URL. Rekap di bawah hanya menampilkan kiriman dari perangkat ini.'}</p></div></div>
     <div id="gOut" style="margin-top:18px"></div>`;
   const info = () => $('#gInfo').textContent = KUNCI_GURU_INFO[`P${$('#gP').value}-${$('#gK').value}`] || 'Belum ada kunci untuk kegiatan ini.';
   $('#gP').onchange = () => { $('#gK').innerHTML = kegOpts($('#gP').value); info(); }; $('#gK').onchange = info; info();
   $('#gPid').onchange = e => { store.set('guru.pid', e.target.checked); document.documentElement.classList.toggle('pid', e.target.checked); };
+  $('#gKode').onclick = async () => {
+    const url = $('#gUrl').value.trim(), kunci = $('#gKey').value, out = $('#gOut');
+    if (!url) return alertBox('Belum terhubung', 'Isi URL Apps Script dulu.');
+    out.innerHTML = '<p class="muted">Memuat…</p>';
+    try { const j = await (await fetch(url + '?' + new URLSearchParams({ aksi: 'kode', kunci }))).json(); if (!j.ok) throw new Error(j.pesan);
+      const sel = $('#gKelas').value; const ent = Object.entries(j.data).filter(([k]) => !sel || k === sel);
+      out.innerHTML = `<h2>Kode kelas</h2><p class="muted">Tayangkan di PID. Murid memilih kelas, mengetik kode, lalu memilih namanya.</p><div class="grid g3">${ent.map(([k, c]) => `<div class="card" style="text-align:center"><div class="muted" style="font-weight:700">${esc(k)}</div><div class="stat" style="font-size:52px;letter-spacing:6px">${esc(c)}</div></div>`).join('')}</div>`; }
+    catch (err) { out.innerHTML = `<div class="note coral"><b>Gagal memuat:</b> ${esc(err.message || 'periksa kunci guru')}.</div>`; }
+  };
   $('#fg').onsubmit = async e => { e.preventDefault();
     const url = $('#gUrl').value.trim(), kunci = $('#gKey').value, kelas = $('#gKelas').value, p = $('#gP').value, k = $('#gK').value;
     store.set('guru.url', url); store.set('guru.kunci', kunci); store.set('guru.kelas', kelas); store.set('guru.p', p); store.set('guru.k', k);
     const out = $('#gOut'); out.innerHTML = '<p class="muted">Memuat…</p>';
-    let rows;
-    if (url) { try { const q = new URLSearchParams({ aksi: 'rekap', kunci, kelas, pertemuan: 'P' + p, kegiatan: k }); const res = await fetch(url + '?' + q); const j = await res.json(); if (!j.ok) throw new Error(j.pesan); rows = j.data; }
+    let rows, murid = [];
+    if (url) { try { const q = new URLSearchParams({ aksi: 'rekap', kunci, kelas, pertemuan: 'P' + p, kegiatan: k }); const res = await fetch(url + '?' + q); const j = await res.json(); if (!j.ok) throw new Error(j.pesan); rows = j.data; murid = j.murid || []; }
       catch (err) { out.innerHTML = `<div class="note coral"><b>Gagal memuat:</b> ${esc(err.message || 'periksa URL, kunci guru, dan koneksi internet')}.</div>`; return; } }
     else rows = store.get('riwayat', []).filter(r => r.pertemuan === 'P' + p && r.kegiatan === k && (!kelas || r.kelas === kelas));
     const last = {}; rows.forEach(r => { last[`${r.kelas}|${r.absen}`] = r; }); rows = Object.values(last).sort((a, b) => (a.kelas + String(a.absen).padStart(2, '0')).localeCompare(b.kelas + String(b.absen).padStart(2, '0')));
     const sk = rows.map(r => parseFloat(r.skor)).filter(x => !isNaN(x)); const maks = rows.find(r => r.maks)?.maks || '';
+    const sudah = new Set(rows.map(r => String(r.absen))); const belum = murid.filter(m => !sudah.has(String(m.absen)));
     const zona = k === 'audit' ? ['HIJAU', 'KUNING', 'MERAH'].map(z => [z, rows.filter(r => String(r.ringkasan).includes('Zona ' + z)).length]) : null;
-    out.innerHTML = `<div class="grid g3"><div class="card"><div class="stat">${rows.length}</div><div class="muted">murid/kelompok mengirim (kiriman terbaru)</div></div>
+    out.innerHTML = `<div class="grid g3"><div class="card"><div class="stat">${rows.length}</div><div class="muted">murid tercatat${murid.length ? ` dari ${murid.length}` : ''} (kiriman terbaru)</div></div>
       <div class="card"><div class="stat">${sk.length ? (sk.reduce((a, b) => a + b, 0) / sk.length).toFixed(1) : '–'}${maks ? `<span style="font-size:20px">/${esc(maks)}</span>` : ''}</div><div class="muted">rerata skor</div></div>
       ${zona ? `<div class="card">${zona.map(([z, c]) => `<div class="row" style="justify-content:space-between"><b>${z}</b><span class="stat" style="font-size:26px">${c}</span></div>`).join('')}</div>` : ''}</div>
-      <h2>Rincian</h2><div class="tw"><table><thead><tr><th>Kelas</th><th>Absen</th><th>Nama</th><th>Klp</th><th>Skor</th><th>Ringkasan jawaban</th><th>Waktu</th></tr></thead>
-      <tbody>${rows.map(r => `<tr><td>${esc(r.kelas)}</td><td>${esc(r.absen)}</td><td>${esc(r.nama)}</td><td>${esc(r.kelompok)}</td><td>${esc(r.skor)}${r.maks ? '/' + esc(r.maks) : ''}</td><td>${esc(r.ringkasan)}</td><td style="white-space:nowrap">${esc(new Date(r.waktu).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }))}</td></tr>`).join('') || '<tr><td colspan="7" class="muted">Belum ada kiriman.</td></tr>'}</tbody></table></div>`;
+      ${kelas && murid.length ? `<h2>Belum mengerjakan (${belum.length})</h2><div class="card">${belum.length ? belum.map(m => `${esc(m.absen)}. ${esc(m.nama)}`).join(' · ') : '<span class="right">Semua murid sudah tercatat.</span>'}</div>` : (url && !kelas ? '<div class="note">Pilih satu kelas untuk melihat daftar murid yang belum mengerjakan.</div>' : '')}
+      <h2>Rincian</h2><div class="tw"><table><thead><tr><th>Kelas</th><th>Absen</th><th>Nama</th><th>Klp</th><th>Skor</th><th>Ringkasan jawaban</th><th>Dikirim oleh</th><th>Waktu</th></tr></thead>
+      <tbody>${rows.map(r => `<tr><td>${esc(r.kelas)}</td><td>${esc(r.absen)}</td><td>${esc(r.nama)}</td><td>${esc(r.kelompok)}</td><td>${esc(r.skor)}${r.maks ? '/' + esc(r.maks) : ''}</td><td>${esc(r.ringkasan)}</td><td>${r.oleh && r.oleh !== r.nama ? esc(r.oleh) : ''}</td><td style="white-space:nowrap">${esc(new Date(r.waktu).toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }))}</td></tr>`).join('') || '<tr><td colspan="8" class="muted">Belum ada kiriman.</td></tr>'}</tbody></table></div>`;
   };
 }
 
