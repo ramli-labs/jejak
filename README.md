@@ -35,10 +35,11 @@ Kegiatan berlabel "Segera" diisi bertahap.
 3. Menu **Ekstensi → Apps Script**. Tab baru terbuka.
 4. Hapus semua isi `Code.gs`, lalu tempel seluruh isi file `apps-script/Code.gs`.
 5. Pada baris `const KUNCI_GURU = 'ganti-dengan-kunci-rahasia';` ganti isinya dengan kata sandi pilihan Bapak, misalnya `'labschool-jejak-2026'`. **Jangan bagikan ke murid.**
+5b. Buat tab baru bernama **Murid** di Google Sheet dengan kolom `Kelas | Absen | Nama` (contoh: `IX-A | 1 | Raka Pratama`), lalu salin daftar murid dari daftar hadir. **Jangan menaruh daftar murid di GitHub** karena repo bersifat publik.
 6. Tekan ikon **Simpan** (disket).
 7. Di bilah atas, pilih fungsi **siapkan**, lalu tekan **Jalankan**.
    - Muncul jendela izin → **Tinjau izin** → pilih akun Bapak → **Lanjutan** → **Buka JEJAK (tidak aman)** → **Izinkan**. Ini normal untuk skrip buatan sendiri.
-   - Kembali ke spreadsheet: sekarang ada sheet **Jawaban** dengan judul kolom berwarna hijau tua.
+   - Kembali ke spreadsheet: sekarang ada tab **Jawaban** dan tab **KodeKelas** berisi kode 4 huruf untuk tiap kelas (dibuat otomatis dari tab Murid). Jika menambah kelas baru di tab Murid, jalankan `siapkan` lagi.
 
 ## Langkah 2 · Terapkan sebagai Aplikasi Web
 
@@ -78,7 +79,7 @@ Selama URL masih kosong, web berjalan dalam **mode coba**: jawaban hanya tersimp
 
 ## Langkah 5 · Uji sebelum dipakai di kelas
 
-1. Buka web, isi identitas uji (misalnya nama "Uji Guru", kelas IX-A, absen 99).
+1. Buka web, pilih kelas IX-A, ketik kode kelas IX-A (lihat tab KodeKelas atau tombol **Kode kelas** di mode guru), tekan **Tampilkan daftar nama**, lalu pilih satu nama.
 2. Kerjakan satu kegiatan (misalnya Tiket Keluar) lalu tekan **Kirim ke guru**. Harus muncul tulisan hijau "Terkirim ke guru".
 3. Buka Google Sheet → sheet **Jawaban**: baris baru harus muncul.
 4. Di web, tekan **Guru** (pojok kanan atas) → isi URL dan kunci guru → pilih kelas IX-A, P1, kegiatan yang tadi → **Tampilkan rekap**.
@@ -89,16 +90,19 @@ Selama URL masih kosong, web berjalan dalam **mode coba**: jawaban hanya tersimp
 ## Cara pakai di kelas
 
 **Murid**
-- Buka tautan, isi nama, kelas, absen, dan nomor kelompok sekali di awal.
+- Guru menayangkan kode kelas di PID (mode guru → **Kode kelas**).
+- Murid membuka tautan, memilih kelas, mengetik kode kelas, menekan **Tampilkan daftar nama**, lalu memilih namanya sendiri dan nomor kelompok.
+- Jika nama tidak ada atau internet bermasalah, ada pilihan **Namaku tidak ada** untuk mengisi nama dan absen secara manual.
 - Pilih pertemuan → kerjakan kegiatan berurutan → tekan **Kirim ke guru** di setiap kegiatan.
-- Kegiatan **kelompok** cukup dikirim oleh satu anggota (nama anggota diisi di formulir).
+- Kegiatan **kelompok** cukup dikirim oleh satu anggota. Pengirim **mencentang nama teman sekelompoknya**, lalu jawaban otomatis tercatat untuk semua anggota. Di komputer anggota lain muncul tanda "Sudah dikirim oleh kelompokmu".
 - Komputer lab dipakai bergantian: setelah selesai, tekan nama di pojok kanan atas → **Ganti murid**.
 - Jika internet putus, jawaban disimpan dan dikirim ulang otomatis. Tombol oranye "belum terkirim" bisa ditekan untuk mengirim ulang.
 
 **Guru**
 - Tombol **Guru** → pilih kelas, pertemuan, kegiatan → **Tampilkan rekap**.
 - Centang **Tampilan besar (PID)** untuk menayangkan rekap di papan interaktif.
-- Rekap menampilkan kiriman **terbaru** tiap murid, rerata skor, dan (untuk Audit) jumlah murid per zona.
+- Rekap menampilkan kiriman **terbaru** tiap murid, rerata skor, (untuk Audit) jumlah murid per zona, dan daftar **Belum mengerjakan** bila satu kelas dipilih.
+- Tombol **Kode kelas** menampilkan kode tiap kelas dalam huruf besar untuk ditayangkan.
 - **Post-test** dan **wawancara** dinilai manual: isi kolom **Skor** langsung di Google Sheet; rekap ikut berubah.
 
 ## Privasi
@@ -106,6 +110,7 @@ Selama URL masih kosong, web berjalan dalam **mode coba**: jawaban hanya tersimp
 - **Audit Jejakku**: jawaban tiap butir tidak pernah dikirim atau disimpan. Yang dikirim hanya skor, zona, jalur, dan rencana tindakan.
 - Akun @raka.ix, nama Raka, dan "SMP Harapan Bangsa" adalah fiktif.
 - Web tidak meminta data selain nama, kelas, absen, dan nomor kelompok.
+- Daftar nama murid hanya tersimpan di Google Sheet guru dan hanya bisa diambil dengan kode kelas yang benar. NIS/NISN tidak dipakai.
 
 ## Mengubah isi
 
