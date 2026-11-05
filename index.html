@@ -298,7 +298,7 @@ document.addEventListener('click', e => {
   if (e.target.id === 'chipUser') confirmBox('Ganti murid?', 'Data identitas dan jawaban yang belum selesai di komputer ini akan dihapus. Jawaban yang sudah terkirim aman.', 'Ya, ganti murid', () => { logout(); });
   if (e.target.id === 'chipQueue') flushQueue(true);
 });
-function logout() { store.del('profil'); store.del('done'); store.clearPrefix('draft.'); location.hash = ''; render(); }
+function logout() { store.del('profil'); store.del('done'); store.clearPrefix('draft.'); store.clearPrefix('roster.'); location.hash = ''; render(); }
 function confirmBox(title, text, okLabel, onOk) {
   $('#modalRoot').innerHTML = `<div class="modal"><div class="card"><h3 style="margin-top:0">${esc(title)}</h3><p>${esc(text)}</p><div class="row"><button class="btn" id="mOk">${esc(okLabel)}</button><button class="btn ghost" id="mNo">Batal</button></div></div></div>`;
   $('#mNo').onclick = () => $('#modalRoot').innerHTML = '';
@@ -464,7 +464,7 @@ function ambilAnggota(root) {
   const absen = $$('input[name=agt]:checked', root).map(x => x.value);
   const nama = absen.map(a => (daftar.find(m => m.absen === a) || {}).nama || a);
   const kelompok = val(root, 'kelompok_isi') || u.kelompok || '';
-  return { anggota: absen, kelompok, namaAnggota: [u.nama, ...nama].join(', ') || val(root, 'anggota_teks') };
+  return { anggota: absen, kelompok, namaAnggota: $('input[name=agt]', root) ? [u.nama, ...nama].join(', ') : [u.nama, val(root, 'anggota_teks')].filter(Boolean).join(', ') };
 }
 function cekAnggota(root) { if ($('input[name=agt]', root) && !$$('input[name=agt]:checked', root).length) { alertBox('Anggota belum dipilih', 'Centang nama teman sekelompokmu dulu, supaya mereka ikut tercatat.'); return false; } return true; }
 
