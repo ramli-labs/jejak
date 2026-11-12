@@ -18,6 +18,7 @@ header.top{background:var(--teal);color:#fff;position:sticky;top:0;z-index:20}
 .brand small{display:block;font-weight:500;letter-spacing:0;opacity:.8;font-size:12px}
 .top .sp{flex:1}
 .chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:5px 12px;font-size:14px;cursor:pointer}
+.edp{display:inline-block;font-size:12px;font-weight:700;color:var(--teal);background:#E6F0EF;border-radius:8px;padding:3px 10px;margin-top:6px;line-height:1.35}
 .chip.warn{background:var(--amber);color:var(--teal);border-color:var(--amber);font-weight:700}
 main{max-width:1080px;margin:0 auto;padding:22px 18px 80px}
 h1{font-size:28px;line-height:1.2;margin:4px 0 8px}
@@ -169,6 +170,7 @@ const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
 
 /* ===================== DATA MODUL ===================== */
+const SINTAKS = ['Sintaks 1 · Penentuan pertanyaan mendasar', 'Sintaks 2 · Mendesain perencanaan proyek', 'Sintaks 3 · Menyusun jadwal & rancangan produk', 'Sintaks 4 · Memonitor pelaksanaan proyek', 'Sintaks 4–5 · Memonitor & menguji hasil', 'Sintaks 5–6 · Menguji hasil & evaluasi pengalaman'];
 const PERTEMUAN = [
   { n: 1, judul: 'Jejakku, Citraku', sub: 'Mengenal dan mengaudit jejak digital pribadi', tp: 'Informatika LD.9.1–9.2',
     tujuan: ['Membedakan jejak aktif dan jejak pasif dari aktivitas sehari-hari.', 'Menganalisis bagaimana kepingan jejak disatukan dan dibaca manusia maupun algoritma KA.', 'Mengaudit jejak digital sendiri dan memilih satu tindakan perbaikan.'],
@@ -399,16 +401,16 @@ function viewProfil(app) {
 function progres(p) { const ks = p.kegiatan.filter(k => k.r); const d = ks.filter(k => isDone(p.n, k.id)).length; return [d, ks.length]; }
 function viewBeranda(app) {
   app.innerHTML = `<section class="hero"><div class="tag">Proyek Modul 3</div><div class="pq">"${esc(PROYEK)}"</div>
-    <p style="opacity:.85;margin-bottom:0">6 pertemuan · produk akhir: video kampanye untuk mading digital sekolah</p></section>
+    <p style="opacity:.85;margin-bottom:0">6 pertemuan · produk akhir: video kampanye untuk mading digital sekolah</p><p style="opacity:.85;margin:6px 0 0;font-size:14px">Alur PjBL: pertanyaan mendasar (P1) → perencanaan (P2) → jadwal & rancangan (P3) → produksi (P4–P5) → uji & evaluasi (P5–P6)</p></section>
     <h2>Pertemuan</h2><div class="grid g3">${PERTEMUAN.map(p => { const [d, t] = progres(p); const siap = p.kegiatan.some(k => k.r && k.id !== 'tiket');
       return `<a class="card pcard" href="#p${p.n}"><div class="row" style="justify-content:space-between"><span class="pnum">P${p.n}</span>${siap ? '<span class="badge">Tersedia</span>' : '<span class="badge soon">Kerangka</span>'}</div>
-      <h3>${esc(p.judul)}</h3><div class="muted" style="font-size:14px">${esc(p.sub)}</div><div class="bar"><i style="width:${t ? d / t * 100 : 0}%"></i></div><div class="muted" style="font-size:13px;margin-top:4px">${d}/${t} kegiatan selesai</div></a>`; }).join('')}</div>`;
+      <h3>${esc(p.judul)}</h3><div class="muted" style="font-size:14px">${esc(p.sub)}</div><span class="edp">${esc(SINTAKS[p.n - 1])}</span><div class="bar"><i style="width:${t ? d / t * 100 : 0}%"></i></div><div class="muted" style="font-size:13px;margin-top:4px">${d}/${t} kegiatan selesai</div></a>`; }).join('')}</div>`;
 }
 
 function viewPertemuan(app, n) {
   const p = PERTEMUAN[n - 1]; if (!p) return viewBeranda(app);
   app.innerHTML = `<div class="crumb"><a href="#">Beranda</a> › Pertemuan ${n}</div>
-    <h1>P${n} · ${esc(p.judul)}</h1><div class="muted">${esc(p.sub)} · ${esc(p.tp)}</div>
+    <h1>P${n} · ${esc(p.judul)}</h1><div class="muted">${esc(p.sub)} · ${esc(p.tp)}</div><div><span class="edp">PjBL · ${esc(SINTAKS[n - 1])}</span></div>
     <div class="note"><b>Hari ini kamu akan:</b><ul style="margin:6px 0 0;padding-left:20px">${p.tujuan.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div>
     <h2>Kegiatan</h2><ul class="klist">${p.kegiatan.map((k, i) => { const done = isDone(n, k.id); const ok = !!k.r;
       const inner = `<span class="n">${done ? '&#10003;' : i + 1}</span><span class="t"><b>${esc(k.judul)}</b><span class="m">${esc(k.desc)}</span></span>
